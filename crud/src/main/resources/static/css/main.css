@@ -1,0 +1,16 @@
+body, form {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 24px;
+}
+
+
+form > div{
+    display: flex;
+    flex-direction: column;
+    gap: 10%;
+}
+
