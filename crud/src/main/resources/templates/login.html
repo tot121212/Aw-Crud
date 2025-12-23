@@ -4,9 +4,12 @@
         <meta charset="UTF-8">
         <title>Aw Crud...</title>
         <link rel="stylesheet" th:href="@{/css/main.css}">
+        <script src="https://unpkg.com/htmx.org@1.9.2"></script>
     </head>
     <body>
-        <form action="" method="get" class="login-form">
+        <h1>Aw Crud...</h1>
+
+        <form hx-post="/login" hx-target="#msg" hx-swap="innerHTML" class="login-form">
             <div class="login-username-div">
                 <label for="username">Username:</label>
                 <input type="text" name="username" id="username" required />
@@ -18,7 +21,7 @@
             <div class="login-submit">
                 <input type="submit" value="Login" />
             </div>
-        
         </form>
+        <div id="msg"></div>
     </body>
 </html>
