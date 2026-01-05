@@ -1,0 +1,9 @@
+services:
+  database:
+    image: 'postgres:15.2'
+    ports:
+    - '5432'
+    environment:
+    - 'POSTGRES_USER=postgres'
+    - 'POSTGRES_DB=crud_db'
+    - 'POSTGRES_PASSWORD=postgres'
