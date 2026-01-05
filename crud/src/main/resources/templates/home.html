@@ -1,16 +1,15 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
     <head>
-        <meta charset="UTF-8"
+        <meta charset="UTF-8">
         <title>Aw Crud...</title>
         <link rel="stylesheet" th:href="@{/css/main.css}">
-        <script src="https://unpkg.com/htmx.org@1.9.2"></script>
     </head>
     <body>
         <h1>Aw Crud...</h1>
 
-        <p>Please log in <a th:href="@{/login}">here</a></p>
-        <p>Or register <a th:href="@{/register}">here</a></p>
+        <p>Please log in <a th:href="@{/auth/login}">here</a></p>
+        <p>Or register <a th:href="@{/auth/register}">here</a></p>
         
     </body>
 </html>

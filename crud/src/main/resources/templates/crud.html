@@ -1,17 +1,28 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
     <head>
-        <meta charset="UTF-8"
+        <meta charset="UTF-8">
         <title>Aw Crud...</title>
         <link rel="stylesheet" th:href="@{/css/main.css}">
-        <script src="https://unpkg.com/htmx.org@1.9.2"></script>
     </head>
     <body>
         <h1>Aw Crud...</h1>
         
-        <form hx-post="/create"></form>
-        <form hx-post="/read"></form>
-        <form hx-post="/update"></form>
-        <form hx-post="/delete"></form>
+        <form method="post" th:action="@{/crud/create-test-users}">
+            <button type="submit">Create Test Users</button>
+        </form>
+        
+        <form method="post" th:action="@{/create}">
+            <button type="submit">Create</button>
+        </form>
+        <form method="post" th:action="@{/read}">
+            <button type="submit">Read</button>
+        </form>
+        <form method="post" th:action="@{/update}">
+            <button type="submit">Update</button>
+        </form>
+        <form method="post" th:action="@{/delete}">
+            <button type="submit">Delete</button>
+        </form>
     </body>
 </html>

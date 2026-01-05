@@ -8,6 +8,7 @@ import org.springframework.security.config.annotation.web.configurers.LogoutConf
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -25,12 +26,12 @@ public class WebSecurityConfig {
     @Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http
+            .securityMatcher("/crud")
 			.authorizeHttpRequests((requests) -> requests
-				.requestMatchers("/", "/home").permitAll()
-				.anyRequest().authenticated()
-			)
+                .anyRequest().authenticated())
 			.formLogin((form) -> form
-				.loginPage("/login")
+				.loginPage("/auth/login")
+                .failureUrl("/auth/login?error=true")
 				.permitAll()
 			)
 			.logout(LogoutConfigurer::permitAll);
@@ -45,12 +46,15 @@ public class WebSecurityConfig {
 
     // Purpose: load user data from db for Spring Security
     @Bean
-    @SuppressWarnings("Convert2Lambda")
+    @SuppressWarnings("Convert2Lambda") // fuck that
     public UserDetailsService userDetailsService() {
         return new UserDetailsService() {
             @Override
             public UserDetails loadUserByUsername(String username) {
-                com.crud_project.crud.entity.User user = userRepo.findByUserName(username).orElseThrow();
+                com.crud_project.crud.entity.User user = userRepo
+                    .findByUserName(username)
+                    .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
+                
                 return User.builder()
                     .username(user.getUserName())
                     .password(user.getHashedPassword())
