@@ -100,25 +100,17 @@
 	        <scope>runtime</scope>
             <optional>true</optional>
 	    </dependency>
+
 	</dependencies>
 
 	<build>
 		<plugins>
+        
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-                <configuration>
-                    <annotationProcessorPaths>
-                        <path>
-                            <groupId>org.projectlombok</groupId>
-                            <artifactId>lombok</artifactId>
-                        </path>
-                    </annotationProcessorPaths>
-                    <compilerArgs>
-                        <arg>-parameters</arg>
-                    </compilerArgs>
-                </configuration>
 			</plugin>
+
 		</plugins>
 	</build>
 
