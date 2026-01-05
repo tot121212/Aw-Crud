@@ -50,7 +50,7 @@ public class WebSecurityConfig {
         return new UserDetailsService() {
             @Override
             public UserDetails loadUserByUsername(String username) {
-                com.crud_project.crud.entity.User user = userRepo.findByUsername(username).orElseThrow();
+                com.crud_project.crud.entity.User user = userRepo.findByUserName(username).orElseThrow();
                 return User.builder()
                     .username(user.getUserName())
                     .password(user.getHashedPassword())

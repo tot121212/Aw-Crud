@@ -23,7 +23,7 @@ public class UserService {
     }
 
     public User getUserByName(String username) {
-        Optional<User> optionalUser = userRepo.findByUsername(username);
+        Optional<User> optionalUser = userRepo.findByUserName(username);
         if (optionalUser.isPresent()){
             return optionalUser.get();
         }
