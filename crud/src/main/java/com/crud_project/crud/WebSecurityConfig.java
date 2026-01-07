@@ -24,30 +24,30 @@ public class WebSecurityConfig {
     private final UserRepo userRepo;
 
     @Bean
-	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http
-            .securityMatcher("/crud")
 			.authorizeHttpRequests((requests) -> requests
+                .requestMatchers("/", "/home", "/auth/register", "/css/**").permitAll()
                 .anyRequest().authenticated())
 			.formLogin((form) -> form
 				.loginPage("/auth/login")
+                .defaultSuccessUrl("/crud", true)
                 .failureUrl("/auth/login?error=true")
 				.permitAll()
 			)
 			.logout(LogoutConfigurer::permitAll);
-
 		return http.build();
 	}
 
     @Bean
-	public PasswordEncoder passwordEncoder() {
+	PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
 
     // Purpose: load user data from db for Spring Security
     @Bean
     @SuppressWarnings("Convert2Lambda") // fuck that
-    public UserDetailsService userDetailsService() {
+    UserDetailsService userDetailsService() {
         return new UserDetailsService() {
             @Override
             public UserDetails loadUserByUsername(String username) {

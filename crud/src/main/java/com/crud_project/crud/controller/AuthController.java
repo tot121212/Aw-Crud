@@ -2,7 +2,9 @@ package com.crud_project.crud.controller;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.crud_project.crud.entity.User;
@@ -12,14 +14,19 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Controller // define this as a rest controller
-// @RequestMapping("/auth")
+@RequestMapping("/auth")
 @RequiredArgsConstructor // lombok init
 @Slf4j
 public class AuthController {
     private final UserService userService; // i kinda dont understand the need to do this when i can ref userservice directly but
 
+    @GetMapping("/register")
+    public String loginGet() {
+        return "register";
+    }
+
     @PostMapping("/register")
-    public String register(@RequestParam String username, @RequestParam String password) {
+    public String registerPost(@RequestParam String username, @RequestParam String password) {
         log.debug("Attempting to register user: {}", username);
         // Hash password and save user
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
@@ -38,4 +45,9 @@ public class AuthController {
 
         return "redirect:/auth/login";
     }
+
+    // @PostMapping("/login")
+    // public String loginPost(){
+    //     return "redirect:/crud";
+    // }
 }

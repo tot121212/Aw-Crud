@@ -6,9 +6,10 @@ import java.nio.charset.StandardCharsets;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Controller;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.crud_project.crud.entity.User;
 import com.crud_project.crud.service.UserService;
@@ -17,7 +18,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Controller // define this as a rest controller
-// @RequestMapping("/crud")
+@RequestMapping("/crud")
 @RequiredArgsConstructor // lombok init
 @Slf4j
 public class CrudController {
