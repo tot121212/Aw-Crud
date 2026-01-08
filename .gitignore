@@ -1,3 +1,6 @@
+### VS Code ###
+.vscode/
+
 HELP.md
 Notes.md
 target/
@@ -30,5 +33,3 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
-### VS Code ###
-.vscode/
