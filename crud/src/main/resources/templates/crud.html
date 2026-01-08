@@ -7,22 +7,30 @@
     </head>
     <body>
         <h1>Aw Crud...</h1>
-        
+        <div> <!-- User displays here -->
+            <div>Username: <div th:text="${currentUser.userName}"></div></div>
+            <div>How many Aw Cruds you have performed: <div th:text="${currentUser.awCrudsPerformed}"></div></div>
+        </div>
         <form method="post" th:action="@{/crud/create-test-users}">
             <button type="submit">Create Test Users</button>
         </form>
-        
-        <form method="post" th:action="@{/create}">
+        <form method="post" th:action="@{/crud/create}">
+            <label for="username">Username: <input type="text" name="username" id="username"></label>
+            <label for="password">Password: <input type="text" name="password" id="password"></label>
             <button type="submit">Create</button>
         </form>
-        <form method="post" th:action="@{/read}">
+        <form method="post" th:action="@{/crud/read}">
+            <label for="args">Arguments: <input type="text" name="args"></label>
             <button type="submit">Read</button>
         </form>
-        <form method="post" th:action="@{/update}">
+        <form method="post" th:action="@{/crud/update}">
             <button type="submit">Update</button>
         </form>
-        <form method="post" th:action="@{/delete}">
+        <form method="post" th:action="@{/crud/delete}">
             <button type="submit">Delete</button>
+        </form>
+        <form method="post" th:action="@{/auth/logout}">
+            <button type="submit">Logout</button>
         </form>
     </body>
 </html>

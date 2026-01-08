@@ -8,19 +8,14 @@
     <body>
         <h1>Aw Crud...</h1>
         <h2>Register</h2>
-        <form method="post" th:action="@{/auth/register}" class="register-form">
-            <div class="register-username-div">
-                <label for="username">Username:</label>
-                <input type="text" name="username" id="username" required />
-            </div>
-            <div class="register-password-div">
-                <label for="password">Password:</label>
-                <input type="password" name="password" id="password" required />
-            </div>
-            <div class="register-submit">
-                <input type="submit" value="Register"/>
-            </div>
-            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+        <div th:if="${param.error}" style="color: rgb(255, 0, 119);">
+            Invalid username and/or password!
+        </div>
+        <form method="post" th:action="@{/auth/register}">
+            <div><label for="username">Username: <input type="text" name="username" required/></label></div>
+            <div><label for="password">Password: <input type="text" name="password" required/></label></div>
+            <div><input type="submit" value="Register"/></div>
+        </form>
         </form>
     </body>
 </html>

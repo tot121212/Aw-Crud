@@ -5,9 +5,12 @@ import java.nio.charset.StandardCharsets;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.util.StreamUtils;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -17,17 +20,27 @@ import com.crud_project.crud.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-@Controller // define this as a rest controller
+@Controller
 @RequestMapping("/crud")
-@RequiredArgsConstructor // lombok init
+@RequiredArgsConstructor
 @Slf4j
 public class CrudController {
     private final UserService userService; // i kinda dont understand the need to do this when i can ref userservice directly but
 
-    @Value("classpath:resources/static/data/dbUsernames.txt")
-    Resource dbUsernamesResource;
-    @Value("classpath:resources/static/data/dbPassword.txt")
-    Resource dbPasswordResource;
+    @Value("classpath:static/data/dbUsernames.txt")
+    private Resource dbUsernamesResource;
+    @Value("classpath:static/data/dbPassword.txt")
+    private Resource dbPasswordResource;
+
+    @GetMapping("") //"/crud"
+    public String getCrud(Model model, Authentication authentication) {
+        // get username from sessiontoken
+        String username = authentication.getName();
+        User user = userService.getUserByName(username);
+        user.setHashedPassword("");
+        model.addAttribute("currentUser", user);
+        return "crud";
+    }
 
     // interact with and filter requests here
     @PostMapping("/create-test-users")
@@ -68,7 +81,7 @@ public class CrudController {
             user.setIsDeleted(false);
             userService.createUser(user);
         }
-        
+        log.info("Created test users");
         return "redirect:/crud";
     }
 }
