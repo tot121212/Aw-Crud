@@ -1,8 +1,6 @@
 ### VS Code ###
 .vscode/
 
-HELP.md
-Notes.md
 target/
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
@@ -33,3 +31,4 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
+crud/docs/
