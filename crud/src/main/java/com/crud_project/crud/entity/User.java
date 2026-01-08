@@ -22,7 +22,7 @@ public class User {
     @Column(nullable = false, unique = true)
     private Integer id;
 
-    @Column(nullable = false, unique = false)
+    @Column(nullable = false, unique = true)
     private String userName;
 
     @Column(nullable = false)
