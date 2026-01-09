@@ -1,15 +1,15 @@
 package com.crud_project.crud.controller;
 
+import java.util.Map;
+
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-
-import java.util.Map;
 
 import com.crud_project.crud.entity.User;
 import com.crud_project.crud.service.UserService;
@@ -47,15 +47,6 @@ public class AuthController {
     @GetMapping({"/login", "/register"})
     public String loginGet(HttpServletRequest request, Authentication authentication) {
         return authRedirect(request, authentication);
-    }
-
-    // this exists because there is a weird bug with trailing slashes
-    @GetMapping("/register")
-    public String registerGet(Authentication authentication) {
-        if (authentication.getName() != null) {
-            return "redirect:/crud";
-        }
-        return "register";
     }
 
     @PostMapping("/register")
