@@ -11,16 +11,13 @@
             <div>Username: <div th:text="${currentUser.userName}"></div></div>
             <div>How many Aw Cruds you have performed: <div th:text="${currentUser.awCrudsPerformed}"></div></div>
         </div>
-        <form method="post" th:action="@{/crud/create-test-users}">
-            <button type="submit">Create Test Users</button>
-        </form>
         <form method="post" th:action="@{/crud/create}">
             <label for="username">Username: <input type="text" name="username" id="username"></label>
             <label for="password">Password: <input type="text" name="password" id="password"></label>
             <button type="submit">Create</button>
         </form>
         <form method="post" th:action="@{/crud/read}">
-            <label for="args">Arguments: <input type="text" name="args"></label>
+            <label for="args">Arguments: <input type="text" name="args" id="args"></label>
             <button type="submit">Read</button>
         </form>
         <form method="post" th:action="@{/crud/update}">
@@ -31,6 +28,9 @@
         </form>
         <form method="post" th:action="@{/auth/logout}">
             <button type="submit">Logout</button>
+        </form>
+        <form method="post" th:action="@{/crud/create-test-users}">
+            <button type="submit">DEBUG: Create Test Users</button>
         </form>
     </body>
 </html>
