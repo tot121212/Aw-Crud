@@ -10,10 +10,13 @@ body {
     line-height: 1.6;
     color: #333;
     background: #f5f5f5;
-    padding: 12px 10%;
+}
+
+#content{
     display: flex;
     flex-direction: column;
     gap: 10px;
+    padding: 12px 10%;
 }
 
 .container {
@@ -32,7 +35,22 @@ h1, h2, label {
     justify-self: center;
 }
 
+#header {
+    display:grid;
+    gap: 10px;
+}
 
+#header * {
+    justify-content: center;
+}
+
+#header h1 {
+    grid-column: 1 / -1;
+}
+
+#header #logout-form {
+    grid-column: 4 / 5;
+}
 
 .user-info {
     background: #e8f4fd;
@@ -100,7 +118,7 @@ form {
 }
 
 form button {
-    flex: 1 1 12px;
+    flex: 0 1 12px;
     height: 12rem;
 }
 

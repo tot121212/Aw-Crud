@@ -2,12 +2,18 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
     <head>
         <meta charset="UTF-8">
-        <title>Aw Crud...</title>
-        <link rel="stylesheet" th:href="@{/css/main.css}">
+        <title>Aw CRUD</title>
+        <link rel="stylesheet" type="text/css" th:href="@{/css/main.css}">
     </head>
     <body>
-        <h1>Aw Crud...</h1>
-        <p>Please log in <a th:href="@{/auth/login}">here</a></p>
-        <p>Or register <a th:href="@{/auth/register}">here</a></p>
+        <div id="content">
+            <div id="header" class="container">
+                <h1>Aw CRUD...</h1>
+            </div>
+            <div class="container">
+                <p>Please log in <a th:href="@{/auth/login}">here</a></p>
+                <p>Or register <a th:href="@{/auth/register}">here</a></p>
+            </div>
+        </div>
     </body>
 </html>

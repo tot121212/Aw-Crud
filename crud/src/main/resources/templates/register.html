@@ -2,20 +2,23 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
     <head>
         <meta charset="UTF-8">
-        <title>Aw Crud...</title>
-        <link rel="stylesheet" th:href="@{/css/main.css}">
+        <title>Aw CRUD</title>
+        <link rel="stylesheet" type="text/css" th:href="@{/css/main.css}">
     </head>
     <body>
-        <h1>Aw Crud...</h1>
-        <h2>Register</h2>
-        <div th:if="${param.error}" style="color: rgb(255, 0, 119);">
-            Invalid username and/or password!
+        <div id="content">
+            <div id="header">
+                <h1>Aw CRUD...</h1>
+            </div>
+            <h2>Register</h2>
+            <div th:if="${param.error}" style="color: rgb(255, 0, 119);">
+                Invalid username and/or password!
+            </div>
+            <form method="post" th:action="@{/auth/register}">
+                <div><label for="username">Username: <input type="text" name="username" id="username" autocomplete="username" required/></label></div>
+                <div><label for="password">Password: <input type="password" name="password" id="password" autocomplete="new-password" required/></label></div>
+                <div><input type="submit" value="Register"/></div>
+            </form>
         </div>
-        <form method="post" th:action="@{/auth/register}">
-            <div><label for="username">Username: <input type="text" name="username" required/></label></div>
-            <div><label for="password">Password: <input type="text" name="password" required/></label></div>
-            <div><input type="submit" value="Register"/></div>
-        </form>
-        </form>
     </body>
 </html>
