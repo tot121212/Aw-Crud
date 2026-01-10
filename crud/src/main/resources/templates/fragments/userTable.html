@@ -1,0 +1,18 @@
+<div id="user-table" th:fragment="user-table">
+    <table th:if="${users}">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Username</th>
+                <th>CRUD Count</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="user : ${users}">
+                <td th:text="${user.id}"></td>
+                <td th:text="${user.userName}"></td>
+                <td th:text="${user.awCrudsPerformed}"></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
