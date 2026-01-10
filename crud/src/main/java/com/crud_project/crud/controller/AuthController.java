@@ -4,15 +4,13 @@ import java.util.Map;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.crud_project.crud.entity.User;
-import com.crud_project.crud.service.UserService;
+import com.crud_project.crud.service.AuthService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -23,24 +21,30 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class AuthController {
-    private final UserService userService; // i kinda dont understand the need to do this when i can ref userservice directly but
-
-    public static final Map<String, String> requestedUrlMap = Map.of(
+    // private final UserService userService;
+    private final AuthService authService;
+    private static final Map<String, String> UriToTemplateNameMap = Map.of(
         "/auth/login", "login",
         "/auth/register", "register",
         "/", "home",
         "/home", "home"
     );
+
     // This redirects anyone who is already authenticated to the /crud page
-    public static String authRedirect(HttpServletRequest request, Authentication authentication){
-        log.info("Authenticating user: {}", authentication);
-        String requestedUrl = request.getRequestURI();
-        if (authentication != null && authentication.isAuthenticated()) {
-            log.info("User {} already authenticated, redirecting to /crud", authentication.getName());
-            return "redirect:/crud";
+    public String authRedirect(HttpServletRequest request, Authentication authentication){
+        // if none provided default to home
+        if (request == null) {
+            log.info("No request provided, directing to /home");
+            return "home";
         }
-        String destination = requestedUrlMap.get(requestedUrl);
-        log.info("User not authenticated, redirecting to {}", destination);
+        String requestedUri = request.getRequestURI();
+        if (authentication != null && authentication.isAuthenticated() &&
+            !authentication.getName().equals("anonymousUser")) {
+            log.info("User {} already authenticated, directing to /crud", authentication.getName());
+            return "crud";
+        }
+        String destination = UriToTemplateNameMap.get(requestedUri);
+        log.info("User not authenticated, directing to {}", destination);
         return destination;
     }
     
@@ -51,27 +55,16 @@ public class AuthController {
 
     @PostMapping("/register")
     public String registerPost(@RequestParam String username, @RequestParam String password) {
-        log.debug("Attempting to register user: {}", username);
-        // Hash password and save user
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        String hashedPassword = encoder.encode(password);
-        
         // check if username already exists
-        if (userService.getUserByName(username) != null) {
-            return "redirect:/auth/register?error=true";
+        if (!authService.registerUser(username, password)) {
+            return "redirect:/auth/register";
         }
-
-        User user = new User();
-        user.setUserName(username);
-        user.setHashedPassword(hashedPassword);
-        User createdUser = userService.createUser(user);
-        log.info("User created: {}", createdUser);
-
         return "redirect:/auth/login";
     }
 
     @PostMapping("/logout")
     public String logoutPost(HttpServletRequest request) {
+        log.info("Logging out user: {}", request.getRemoteUser());
         // how to remove authentication token
         SecurityContextHolder.clearContext();
         request.getSession().invalidate();
