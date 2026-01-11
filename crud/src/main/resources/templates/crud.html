@@ -16,7 +16,7 @@
 
             <div id="user-display" th:insert="~{fragments/userDisplay :: user-display(${currentUser})}"></div>
 
-            <form method="post" th:action="@{/crud/requestPage}" class="container" id="request-page-form">
+            <form method="post" th:action="@{/crud/requestPage}" class="container" id="request-page-form" th:if="${page}">
                 <label for="pageNumber">Page: <input type="number" name="pageNumber" id="pageNumber" th:value="${userPage.number}" required></label>
                 <label for="pageSize">Size: <input type="number" name="pageSize" id="pageSize" th:value="${userPage.size}" required></label>
                 <button type="submit">Request Page</button>
