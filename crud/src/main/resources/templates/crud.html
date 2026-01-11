@@ -13,26 +13,29 @@
                     <button type="submit">Logout</button>
                 </form>
             </div>
-            
-            <div id="user-display" class="container"> <!-- User displays here -->
-                <div>Username: <div th:text="${currentUser.userName}"></div></div>
-                <div>Aw CRUD Counter: <div th:text="${currentUser.awCrudsPerformed}"></div></div>
-            </div>
+
+            <div id="user-display" th:insert="~{fragments/userDisplay :: user-display(${currentUser})}"></div>
+
+            <div id="user-table" th:insert="~{fragments/userTable :: user-table(${userPage})}"></div>
+
+            <form method="post" th:action="@{/crud/requestPage}" class="container">
+                <label for="pageNumber">Page: <input type="number" name="pageNumber" id="pageNumber" value="1" required></label>
+                <label for="pageSize">Size: <input type="number" name="pageSize" id="pageSize" value="10" required></label>
+                <button type="submit">Request Page</button>
+            </form>
+
             <form method="post" th:action="@{/crud/create}" class="container">
                 <label for="username">Username: <input type="text" name="username" id="username" required></label>
                 <label for="password">Password: <input type="text" name="password" id="password" required></label>
                 <button type="submit">Create</button>
+                <div th:switch="${param.registerUser != null ? param.registerUser[0] : ''}">
+                    <div th:case="'true'" style="color: rgb(0, 157, 255);">User registration succeeded for: <span th:text="${param.registerUserUsername}"></span></div>
+                    <div th:case="'false'" style="color: rgb(255, 0, 0);">User registration failed for: <span th:text="${param.registerUserUsername}"></span></div>
+                </div>
             </form>
-            <form method="post" th:action="@{/crud/read}" class="container">
-                <label for="arguments">Arguments: <input type="text" name="arguments" id="arguments" required></label>
-                <button type="submit">Read</button>
-            </form>
-            <form method="post" th:action="@{/crud/update}" class="container">
-                <button type="submit">Update</button>
-            </form>
-            <form method="post" th:action="@{/crud/delete}" class="container">
-                <button type="submit">Delete</button>
-            </form>
+
+            
+
             <form method="post" th:action="@{/crud/create-test-users}" class="container">
                 <button type="submit">DEBUG: Create Test Users</button>
             </form>

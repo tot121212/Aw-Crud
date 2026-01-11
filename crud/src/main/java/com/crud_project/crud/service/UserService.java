@@ -4,10 +4,11 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import com.crud_project.crud.entity.User;
+import com.crud_project.crud.repository.UserProjection;
 import com.crud_project.crud.repository.UserRepo;
 
 import lombok.RequiredArgsConstructor;
@@ -66,8 +67,26 @@ public class UserService {
         }
     }
 
-    public Page<User> getAllUsers(Pageable pageable) {
-        return userRepo.findAll(pageable);
+    public Page<UserProjection> getUserProjectionsByPageAndSize(Integer page, Integer size) {
+        if (page == null || 
+            size == null || 
+            page < 0 || 
+            size < 1) {
+            return Page.empty();
+        }
+        if (size > 100) {
+            size = 100;
+        }
+        return userRepo.findAllProjectionsByPage(PageRequest.of(page, size));
     }
 
+    public UserProjection getUserProjectionByName(String username) {
+        Optional<UserProjection> optionalUserProjection = userRepo.findUserProjectionByUserName(username);
+        if (optionalUserProjection.isPresent()){
+            log.info("User with name: {} exists, success", username);
+            return optionalUserProjection.get();
+        }
+        log.info("User with name: {} doesn't exist, failure", username);
+        return null;
+    }
 }

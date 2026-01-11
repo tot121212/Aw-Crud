@@ -1,20 +1,15 @@
 package com.crud_project.crud.controller;
 
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.Resource;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
-import com.crud_project.crud.entity.User;
+import com.crud_project.crud.service.AuthService;
+import com.crud_project.crud.service.CrudService;
 import com.crud_project.crud.service.UserService;
 
 import lombok.RequiredArgsConstructor;
@@ -25,63 +20,43 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class CrudController {
-    private final UserService userService; // i kinda dont understand the need to do this when i can ref userservice directly but
+    private final UserService userService;
+    private final AuthService authService;
+    private final CrudService crudService;
 
-    @Value("classpath:static/data/dbUsernames.txt")
-    private Resource dbUsernamesResource;
-    @Value("classpath:static/data/dbPassword.txt")
-    private Resource dbPasswordResource;
+    private void getCrudInit(Model model, Authentication authentication, Integer pageNumber, Integer pageSize, String filter) {
+        model.addAttribute("currentUser", 
+            userService.getUserProjectionByName(
+            authentication.getName()));
+        model.addAttribute("userPage", 
+            userService.getUserProjectionsByPageAndSize(pageNumber, pageSize));
+    }
 
     @GetMapping("") //"/crud"
-    public String getCrud(Model model, Authentication authentication) {
-        // get username from sessiontoken
-        String username = authentication.getName();
-        User user = userService.getUserByName(username);
-        user.setHashedPassword("");
-        model.addAttribute("currentUser", user);
+    public String getCrud(
+            Model model,
+            Authentication authentication,
+            @RequestParam(defaultValue = "0") Integer pageNumber,
+            @RequestParam(defaultValue = "10") Integer pageSize,
+            @RequestParam(required = false) String filter) {
+            getCrudInit(model, authentication, pageNumber, pageSize, filter);
         return "crud";
     }
 
     // interact with and filter requests here
     @PostMapping("/create-test-users")
-    public String createTestUsers() {
-        log.debug("Attempting to create test users");
-        
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+    public String createTestUsersPost() {
+        return crudService.createTestUsers();
+    }
 
-        // read all lines of dbUsernamesResource
-        String[] usernames; // add 95 more
-        try(InputStream inputStream = dbUsernamesResource.getInputStream()){
-            usernames = StreamUtils
-            .copyToString(inputStream, StandardCharsets.UTF_8)
-            .split("\n");
-        } catch (Exception e) {
-            log.error("Error reading dbUsernamesResource: {}", e.getMessage());
-            return "redirect:/crud";
-        }
+    // TODO: add create, read, update, delete, and awCrud functionality
+    @PostMapping("/create")
+    public String createPost(@RequestParam String username, @RequestParam String password){
+        return "redirect:/crud?registerUser=" + authService.registerUser(username, password) + "&registerUserUsername=" + username;
+    }
 
-        // read file from resources folder
-        String dbPassword;
-        // read first line of dbPasswordResource
-        try(InputStream inputStream = dbPasswordResource.getInputStream()){
-            dbPassword = StreamUtils
-            .copyToString(inputStream, StandardCharsets.UTF_8);
-        } catch (Exception e) {
-            log.error("Error reading dbPasswordResource: {}", e.getMessage());
-            return "redirect:/crud";
-        }
-        
-        String hashedPassword = encoder.encode(dbPassword);
-        
-        for (String username : usernames) {
-            User user = new User();
-            user.setUserName(username);
-            user.setHashedPassword(hashedPassword);
-            user.setAwCrudsPerformed(0);
-            user.setIsDeleted(false);
-            userService.createUser(user);
-        }
-        log.info("Created test users");
-        return "redirect:/crud";
+    @PostMapping("/requestPage")
+    public String requestPagePost(Model model, Authentication authentication, @RequestParam(defaultValue = "0") Integer pageNumber, @RequestParam(defaultValue = "10") Integer pageSize, @RequestParam(required = false) String filter){
+        return "redirect:/crud?pageNumber=" + pageNumber + "&pageSize=" + pageSize + "&filter=" + filter;
     }
 }

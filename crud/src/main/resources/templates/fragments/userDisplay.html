@@ -1,6 +1,6 @@
-<div id="user-table" th:fragment="user-table(page)" class="container">
-    <h2>Users</h2>
-    <table th:if="${page}">
+<div id="user-display" th:fragment="user-display(user)" class="container"> <!-- User displays here -->
+    <h2>Current User</h2>
+    <table th:if="${user}">
         <thead>
             <tr>
                 <th>ID</th>
@@ -9,7 +9,7 @@
             </tr>
         </thead>
         <tbody>
-            <tr th:each="user : ${page.content}">
+            <tr>
                 <td th:text="${user.id}"></td>
                 <td th:text="${user.userName}"></td>
                 <td th:text="${user.awCrudsPerformed}"></td>
