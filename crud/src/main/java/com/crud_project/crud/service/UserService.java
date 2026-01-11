@@ -2,6 +2,8 @@ package com.crud_project.crud.service;
 
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -34,6 +36,22 @@ public class UserService {
     @Value("classpath:static/data/dbPassword.txt")
     private Resource dbPasswordResource;
 
+    private String readResourceFile(Resource resource) throws Exception{
+        try(InputStream inputStream = resource.getInputStream()){
+            return StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
+        }
+    }
+
+    private List<String> getResourceAsListOfStr(Resource resource){
+        try{
+            return Arrays.asList(readResourceFile(resource).split("\\r?\\n"));
+        }
+        catch (Exception e){
+            log.error("Error reading dbUsernamesResource: {}", e.getMessage());
+            return null;
+        }
+    }
+
     public List<User> getAllUsers() {
         return userRepo.findAll();
     }
@@ -43,7 +61,7 @@ public class UserService {
         if (optionalUser.isPresent()){
             return optionalUser.get();
         }
-        log.info("User with name: {} doesn't exist, failure", username);
+        log.warn("User with name: {} doesn't exist", username);
         return null;
     }
 
@@ -52,47 +70,46 @@ public class UserService {
         if (optionalUser.isPresent()){
             return optionalUser.get();
         }
-        log.info("User with id: {} doesn't exist, failure", id);
+        log.warn("User with id: {} doesn't exist", id);
         return null;
     }
 
-    // Assume user is provided already made
+    // Assumes user does not have id because doesnt exist yet in db
     public User createUser (User user){
         User savedUser = userRepo.save(user);
-        log.info("User with id: {} saved, success", user.getId());
         return savedUser;
     }
 
     //Assume this user has been updated, just updating on db
     public User updateUser (User user){
-        //Optional<User> existingUser = userRepo.findById(user.getId());
-        User updatedUser = userRepo.save(user);
-        return updatedUser;
+        Optional<User> existingUser = userRepo.findById(user.getId());
+        if (existingUser.isPresent()){
+            return userRepo.save(user);
+        }
+        return null;
     }
 
     public void deleteUserById (Integer id) {
         userRepo.deleteById(id);
         if (getUserById(id) == null){
-            log.info("User with id: {} was deleted, success", id);
+            log.info("User with id: {} was deleted", id);
         }
         else{
-            log.info("User with id: {} was not deleted, failure", id);
+            log.warn("User with id: {} was not deleted", id);
         }
     }
 
-    private String readResourceFile(Resource resource) throws Exception {
-        try(InputStream inputStream = resource.getInputStream()){
-            return StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
-        }
-    }
+    
 
     public Boolean createTestUsers(){
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
         try {
-            String[] usernames = readResourceFile(dbUsernamesResource).split("\n");
+            List<String> usernames = getResourceAsListOfStr(dbUsernamesResource);
+            log.warn("DEBUG: usernames: {}", usernames);
+            Collections.shuffle(Arrays.asList(usernames));
+
             String password = readResourceFile(dbPasswordResource);
-            
             String hashedPassword = encoder.encode(password);
             
             for (String username : usernames) {
@@ -114,12 +131,15 @@ public class UserService {
 
     public Boolean deleteTestUsers(){
         try {
-            String[] usernames = readResourceFile(dbUsernamesResource).split("\n");
+            List<String> usernames = getResourceAsListOfStr(dbUsernamesResource);
             
             for (String username : usernames) {
                 User user = getUserByName(username.trim());
                 if (user != null) {
                     deleteUserById(user.getId());
+                }
+                else {
+                    throw new Exception(String.format("User '%s' not found during deletion", username.trim()));
                 }
             }
             log.info("Deleted test users");
@@ -153,16 +173,33 @@ public class UserService {
         if (size > 100) {
             size = 100;
         }
-        return userRepo.findAllProjectionsByPage(PageRequest.of(page, size));
+        Page<UserProjection> projections = userRepo.findAllBy(PageRequest.of(page, size));
+        if (projections.isEmpty()){
+            log.warn("No users found");
+        }
+        else {
+            log.info("Users found");
+        }
+        return projections;
     }
 
     public UserProjection getUserProjectionByName(String username) {
         Optional<UserProjection> optionalUserProjection = userRepo.findUserProjectionByUserName(username);
         if (optionalUserProjection.isPresent()){
-            log.info("User with name: {} exists, success", username);
+            log.info("User with name: {} exists", username);
             return optionalUserProjection.get();
         }
-        log.info("User with name: {} doesn't exist, failure", username);
+        log.warn("User with name: {} doesn't exist", username);
+        return null;
+    }
+
+    public Boolean getIsDeletedByName(String username) {
+        Optional<Boolean> optionalIsDeleted = userRepo.findIsDeletedByUserName(username);
+        if (optionalIsDeleted.isPresent()){
+            log.info("User with name: {} exists", username);
+            return optionalIsDeleted.get();
+        }
+        log.warn("User with name: {} doesn't exist", username);
         return null;
     }
 }

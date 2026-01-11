@@ -6,6 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -30,7 +31,10 @@ public class User {
 
     @Column(nullable = false)
     private Integer awCrudsPerformed = 0;
-
+    
     @Column(nullable = false)
     private Boolean isDeleted = false;
+
+    @Version
+    private Long version;
 }

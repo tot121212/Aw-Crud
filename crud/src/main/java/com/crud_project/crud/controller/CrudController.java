@@ -25,7 +25,10 @@ public class CrudController {
 
     // TODO: Possibly add sorting/filters
     private void getCrudInit(Model model, Authentication authentication, Integer pageNumber, Integer pageSize, String filter) {
-        model.addAttribute("currentUser", 
+        // if user is deleted, show gravestone page
+        model.addAttribute("isDeleted",
+            userService.getIsDeletedByName(authentication.getName()));
+        model.addAttribute("currentUser",
             userService.getUserProjectionByName(
             authentication.getName()));
         model.addAttribute("userPage", 

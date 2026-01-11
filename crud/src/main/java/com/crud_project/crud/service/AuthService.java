@@ -19,7 +19,7 @@ public class AuthService {
     public Boolean registerUser(String username, String password){
         log.debug("Attempting to register user: {}", username);
         if (userService.getUserByName(username) != null) {
-            log.error("User {} already exists", username);
+            log.warn("User {} already exists", username);
             return false;
         }
         // Hash password and save user
