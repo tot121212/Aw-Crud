@@ -3,7 +3,6 @@ package com.crud_project.crud.controller;
 import java.util.Map;
 
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -64,10 +63,7 @@ public class AuthController {
 
     @PostMapping("/logout")
     public String logoutPost(HttpServletRequest request) {
-        log.info("Logging out user: {}", request.getRemoteUser());
-        // how to remove authentication token
-        SecurityContextHolder.clearContext();
-        request.getSession().invalidate();
+        authService.logout(request);
         return "redirect:/home";
     }
 }

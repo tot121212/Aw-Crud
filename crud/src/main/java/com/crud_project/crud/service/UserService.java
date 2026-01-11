@@ -1,11 +1,18 @@
 package com.crud_project.crud.service;
 
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StreamUtils;
 
 import com.crud_project.crud.entity.User;
 import com.crud_project.crud.repository.UserProjection;
@@ -20,6 +27,12 @@ import lombok.extern.slf4j.Slf4j;
 // All actual db logic goes here
 public class UserService {
     private final UserRepo userRepo;
+    private final Random random = new Random();
+
+    @Value("classpath:static/data/dbUsernames.txt")
+    private Resource dbUsernamesResource;
+    @Value("classpath:static/data/dbPassword.txt")
+    private Resource dbPasswordResource;
 
     public List<User> getAllUsers() {
         return userRepo.findAll();
@@ -64,6 +77,69 @@ public class UserService {
         }
         else{
             log.info("User with id: {} was not deleted, failure", id);
+        }
+    }
+
+    private String readResourceFile(Resource resource) throws Exception {
+        try(InputStream inputStream = resource.getInputStream()){
+            return StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
+        }
+    }
+
+    public Boolean createTestUsers(){
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+
+        try {
+            String[] usernames = readResourceFile(dbUsernamesResource).split("\n");
+            String password = readResourceFile(dbPasswordResource);
+            
+            String hashedPassword = encoder.encode(password);
+            
+            for (String username : usernames) {
+                User user = new User();
+                user.setUserName(username);
+                user.setHashedPassword(hashedPassword);
+                user.setAwCrudsPerformed(random.nextInt(0, 100));
+                createUser(user);
+            }
+            log.info("Created test users");
+            
+        } catch (Exception e) {
+            log.error("Error creating test users: {}", e.getMessage());
+            return false;
+        }
+
+        return true;
+    }
+
+    public Boolean deleteTestUsers(){
+        try {
+            String[] usernames = readResourceFile(dbUsernamesResource).split("\n");
+            
+            for (String username : usernames) {
+                User user = getUserByName(username.trim());
+                if (user != null) {
+                    deleteUserById(user.getId());
+                }
+            }
+            log.info("Deleted test users");
+            return true;
+
+        } catch (Exception e) {
+            log.error("Error deleting test users: {}", e.getMessage());
+            return false;
+        }
+    }
+
+    public Boolean deleteAllUsers(){
+        try {
+            userRepo.deleteAll();
+            log.info("Deleted all users");
+            return true;
+
+        } catch (Exception e) {
+            log.error("Error deleting all users: {}", e.getMessage());
+            return false;
         }
     }
 

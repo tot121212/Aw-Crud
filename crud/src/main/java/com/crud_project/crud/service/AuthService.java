@@ -1,10 +1,12 @@
 package com.crud_project.crud.service;
 
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.crud_project.crud.entity.User;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -29,5 +31,11 @@ public class AuthService {
         User createdUser = userService.createUser(user);
         log.info("User created: {}", createdUser);
         return true;
+    }
+
+    public void logout(HttpServletRequest request){
+        log.info("Logging out user: {}", request.getRemoteUser());
+        SecurityContextHolder.clearContext();
+        request.getSession().invalidate();
     }
 }

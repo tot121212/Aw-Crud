@@ -16,13 +16,15 @@
 
             <div id="user-display" th:insert="~{fragments/userDisplay :: user-display(${currentUser})}"></div>
 
-            <div id="user-table" th:insert="~{fragments/userTable :: user-table(${userPage})}"></div>
-
-            <form method="post" th:action="@{/crud/requestPage}" class="container">
-                <label for="pageNumber">Page: <input type="number" name="pageNumber" id="pageNumber" value="1" required></label>
-                <label for="pageSize">Size: <input type="number" name="pageSize" id="pageSize" value="10" required></label>
+            <form method="post" th:action="@{/crud/requestPage}" class="container" id="request-page-form">
+                <label for="pageNumber">Page: <input type="number" name="pageNumber" id="pageNumber" th:value="${userPage.number}" required></label>
+                <label for="pageSize">Size: <input type="number" name="pageSize" id="pageSize" th:value="${userPage.size}" required></label>
                 <button type="submit">Request Page</button>
             </form>
+
+            <div id="user-table" th:insert="~{fragments/userTable :: user-table(${userPage})}"></div>
+
+            
 
             <form method="post" th:action="@{/crud/create}" class="container">
                 <label for="username">Username: <input type="text" name="username" id="username" required></label>
@@ -34,11 +36,20 @@
                 </div>
             </form>
 
-            
+            <div class="container" style="display: flex; flex-direction: column; gap: 10px;">
+                <form method="post" th:action="@{/crud/create-test-users}" >
+                    <button type="submit">DEBUG: Create Test Users</button>
+                </form>
 
-            <form method="post" th:action="@{/crud/create-test-users}" class="container">
-                <button type="submit">DEBUG: Create Test Users</button>
-            </form>
+                <form method="post" th:action="@{/crud/delete-test-users}">
+                    <button type="submit" onclick="return confirm('Are you sure you want to delete all test users?')">DEBUG: Delete Test Users</button>
+                </form>
+
+                <form method="post" th:action="@{/crud/delete-all-users}">
+                    <button type="submit" onclick="return confirm('Are you sure you want to delete ALL users? This cannot be undone!')">DEBUG: Delete ALL Users</button>
+                </form>
+
+            </div>
         </div>
     </body>
 </html>
