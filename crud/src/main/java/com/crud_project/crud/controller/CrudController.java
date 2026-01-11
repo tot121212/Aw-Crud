@@ -24,7 +24,6 @@ public class CrudController {
     private final AuthService authService;
 
     // TODO: Possibly add sorting/filters
-    // amazonq-ignore-next-line
     private void getCrudInit(Model model, Authentication authentication, Integer pageNumber, Integer pageSize, String filter) {
         model.addAttribute("currentUser", 
             userService.getUserProjectionByName(
@@ -69,13 +68,11 @@ public class CrudController {
     // Probably attach all this to the userTable
     @PostMapping("/create")
     public String createPost(@RequestParam String username, @RequestParam String password){
-        // amazonq-ignore-next-line
         return "redirect:/crud?registerUser=" + authService.registerUser(username, password) + "&registerUserUsername=" + username;
     }
 
     @PostMapping("/requestPage")
     public String requestPagePost(Model model, Authentication authentication, @RequestParam(defaultValue = "0") Integer pageNumber, @RequestParam(defaultValue = "10") Integer pageSize, @RequestParam(required = false) String filter){
-        // amazonq-ignore-next-line
         return "redirect:/crud?pageNumber=" + pageNumber + "&pageSize=" + pageSize + "&filter=" + filter + "#request-page-form";
     }
 }
