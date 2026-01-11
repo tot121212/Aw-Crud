@@ -24,6 +24,7 @@ public class CrudController {
     private final AuthService authService;
     private final CrudService crudService;
 
+    // TODO: Possibly add sorting/filters
     private void getCrudInit(Model model, Authentication authentication, Integer pageNumber, Integer pageSize, String filter) {
         model.addAttribute("currentUser", 
             userService.getUserProjectionByName(
