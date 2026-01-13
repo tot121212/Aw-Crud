@@ -1,19 +1,22 @@
-<div id="user-display" th:fragment="user-display(user)" class="container"> <!-- User displays here -->
-    <h2>Current User</h2>
-    <table th:if="${user}">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Username</th>
-                <th>Aw CRUDs Performed</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td th:text="${user.id}"></td>
-                <td th:text="${user.userName}"></td>
-                <td th:text="${user.awCrudsPerformed}"></td>
-            </tr>
-        </tbody>
-    </table>
+<div class="user-display container" 
+th:fragment="user-display(user)"> <!-- User displays here -->
+    <div th:if="${user}">
+        <h2>Current User</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Username</th>
+                    <th>Aw CRUDs Performed</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td th:text="${user.id}"></td>
+                    <td th:text="${user.userName}"></td>
+                    <td th:text="${user.awCrudsPerformed}"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </div>

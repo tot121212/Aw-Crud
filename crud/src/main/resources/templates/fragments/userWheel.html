@@ -1,0 +1,22 @@
+<div class="user-wheel container" 
+th:fragment="user-wheel(page, userCount, winner)">
+    <div 
+    th:if="${page != null and userCount != null and winner != null}"
+    th:data-user-count=${userCount} 
+    th:data-winner="${winner}">
+        <h2>The Wheel of CRUD</h2>
+        <div 
+        th:text="${page.totalElements}"></div>
+        <ul>
+            <li 
+            th:each="user : ${page.content}" 
+            th:text="${user.name}"></li>
+        </ul>
+    </div>
+    <style 
+    th:if="${page}" scoped>
+        .user-wheel {
+            --_items:[[${page.totalElements}]];
+        }
+    </style>
+</div>

@@ -23,27 +23,29 @@ public class CrudController {
     private final UserService userService;
     private final AuthService authService;
 
-    // TODO: Possibly add sorting/filters
-    private void getCrudInit(Model model, Authentication authentication, Integer pageNumber, Integer pageSize, String filter) {
-        // if user is deleted, show gravestone page
-        model.addAttribute("isDeleted",
-            userService.getIsDeletedByName(authentication.getName()));
-        model.addAttribute("currentUser",
-            userService.getUserProjectionByName(
-            authentication.getName()));
-        model.addAttribute("userPage", 
-            userService.getUserProjectionsByPageAndSize(pageNumber, pageSize));
-        model.addAttribute("userPageFilter", filter);
-    }
-
     @GetMapping("") //"/crud"
     public String getCrud(
             Model model,
             Authentication authentication,
             @RequestParam(defaultValue = "0") Integer pageNumber,
             @RequestParam(defaultValue = "10") Integer pageSize,
-            @RequestParam(required = false) String filter) {
-            getCrudInit(model, authentication, pageNumber, pageSize, filter);
+            @RequestParam(required = false) String filter,
+            @RequestParam(required = false) String wheelWinner) {
+        model.addAttribute(
+            "isDeleted",
+            userService.getIsDeletedByName(authentication.getName()));
+        model.addAttribute(
+            "currentUser",
+            userService.getUserProjectionByName(authentication.getName()));
+        model.addAttribute(
+            "userPage", 
+            userService.getUserProjectionsByPageAndSize(pageNumber, pageSize));
+        model.addAttribute(
+            "userPageFilter", 
+            filter);
+        if (wheelWinner != null) {
+            model.addAttribute("wheelWinner", wheelWinner);
+        }
         return "crud";
     }
 
@@ -70,12 +72,46 @@ public class CrudController {
     // TODO: add create, read, update, delete, and awCrud functionality
     // Probably attach all this to the userTable
     @PostMapping("/create")
-    public String createPost(@RequestParam String username, @RequestParam String password){
-        return "redirect:/crud?registerUser=" + authService.registerUser(username, password) + "&registerUserUsername=" + username;
+    public String createPost(
+            @RequestParam String username, 
+            @RequestParam String password) {
+        return "redirect:/crud" + 
+        "?registerUser=" + authService.registerUser(username, password) + 
+        "&registerUserUsername=" + username;
     }
 
     @PostMapping("/requestPage")
-    public String requestPagePost(Model model, Authentication authentication, @RequestParam(defaultValue = "0") Integer pageNumber, @RequestParam(defaultValue = "10") Integer pageSize, @RequestParam(required = false) String filter){
-        return "redirect:/crud?pageNumber=" + pageNumber + "&pageSize=" + pageSize + "&filter=" + filter + "#request-page-form";
+    public String requestPagePost(
+            Model model,
+            @RequestParam(defaultValue = "0") Integer pageNumber, 
+            @RequestParam(defaultValue = "10") Integer pageSize, 
+            @RequestParam(required = false) String filter){
+        return "redirect:/crud" + 
+        "?pageNumber=" + pageNumber + 
+        "&pageSize=" + pageSize + 
+        "&filter=" + filter + 
+        "#request-page-form";
+    }
+
+    @PostMapping("/spinWheel")
+    public String spinWheelPost(
+            Model model, 
+            Authentication authentication,
+            @RequestParam(defaultValue = "0") Integer pageNumber,
+            @RequestParam(defaultValue = "10") Integer pageSize) {
+        String isDeletedUser = userService.spinWheel(model, authentication.getName(), pageNumber, pageSize);
+        // add wheel data to the session since its hard to persist everything with uri
+
+        // js script will be within the fragment that will use a
+        // function that takes uri param named wheelLoser and 
+        // just calculate the velocity needed 
+        // to propel the wheel as such that the friction causes it to 
+        // slow perfectly to a specified position
+
+        return "redirect:/crud" + 
+        "?wheelWinner=" + isDeletedUser + 
+        "&pageNumber=" + pageNumber + 
+        "&pageSize=" + pageSize + 
+        "#user-wheel";
     }
 }

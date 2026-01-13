@@ -14,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
 import org.springframework.util.StreamUtils;
 
 import com.crud_project.crud.entity.User;
@@ -99,15 +100,13 @@ public class UserService {
         }
     }
 
-    
-
     public Boolean createTestUsers(){
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
         try {
             List<String> usernames = getResourceAsListOfStr(dbUsernamesResource);
             log.warn("DEBUG: usernames: {}", usernames);
-            Collections.shuffle(Arrays.asList(usernames));
+            Collections.shuffle(usernames);
 
             String password = readResourceFile(dbPasswordResource);
             String hashedPassword = encoder.encode(password);
@@ -201,5 +200,51 @@ public class UserService {
         }
         log.warn("User with name: {} doesn't exist", username);
         return null;
+    }
+
+    /**
+     *  Spin the wheel and return the name of the user that was "deleted"
+     * @param model
+     * @param username
+     * @param page
+     * @param size
+     * @return
+     */
+    public String spinWheel(Model model, String username, Integer page, Integer size) {
+        // we dont have all this on the controller because 
+        // it would be coming back to the service, which is unsafe
+        // im just using userprojections, bc i already have a method for creating pages with them
+        try {
+            UserProjection currentUser = getUserProjectionByName(username);
+            if (currentUser == null){
+                throw new Exception(String.format("User '%s' not found", username));
+            }
+            Page<UserProjection> userProjections = getUserProjectionsByPageAndSize(page, size);
+            if (userProjections.isEmpty()){
+                throw new Exception("No users found");
+            }
+            List<UserProjection> userProjectionsList = userProjections.getContent();
+            if (userProjectionsList.isEmpty()){
+                throw new Exception("No users found");
+            }
+            if (!userProjectionsList.contains(currentUser)){
+                userProjectionsList.add(currentUser);
+            }
+            UserProjection randomUserProjection = userProjectionsList.get(
+                random.nextInt(userProjectionsList.size()));
+            User randomUser = getUserByName(randomUserProjection.getUserName());
+            if (randomUser == null){
+                throw new Exception(String.format("User '%s' not found", randomUserProjection.getUserName()));
+            }
+            randomUser.setIsDeleted(true);
+            User updatedUser = updateUser(randomUser); // update user on db
+            if (updatedUser == null){
+                throw new Exception(String.format("User '%s' not updated on db", randomUserProjection.getUserName()));
+            }
+            return updatedUser.getUserName();
+        } catch (Exception e) {
+            log.warn(e.getMessage());
+            return null;
+        }
     }
 }

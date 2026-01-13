@@ -1,0 +1,21 @@
+:where(.user-wheel) {
+    all: unset;
+    aspect-ratio: 1 / 1;
+    background: crimson;
+    container-type: inline-size;
+    direction: ltr;
+    display: grid;
+    place-content: center start;
+}
+
+.user-wheel li {
+  align-content: center;
+  background: deepskyblue;
+  display: grid;
+  font-size: 5cqi;
+  grid-area: 1 / -1;
+  list-style: none;
+  padding-left: 1ch;
+  transform-origin: center right;
+  width: 50cqi;
+}

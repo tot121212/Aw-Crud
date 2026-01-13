@@ -1,19 +1,22 @@
-<div id="user-table" th:fragment="user-table(page)" class="container">
-    <h2>Users</h2>
-    <table th:if="${page}">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Username</th>
-                <th>Aw CRUDs Performed</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr th:each="user : ${page.content}">
-                <td th:text="${user.id}"></td>
-                <td th:text="${user.userName}"></td>
-                <td th:text="${user.awCrudsPerformed}"></td>
-            </tr>
-        </tbody>
-    </table>
+<div class="user-table container" 
+th:fragment="user-table(page)">
+    <div th:if="${page}">
+        <h2>Users</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Username</th>
+                    <th>Aw CRUDs Performed</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="user : ${page.content}">
+                    <td th:text="${user.id}"></td>
+                    <td th:text="${user.userName}"></td>
+                    <td th:text="${user.awCrudsPerformed}"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </div>

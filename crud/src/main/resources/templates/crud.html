@@ -4,6 +4,7 @@
         <meta charset="UTF-8">
         <title>Aw CRUD</title>
         <link rel="stylesheet" type="text/css" th:href="@{/css/main.css}">
+        <link rel="stylesheet" type="text/css" th:href="@{/css/wheel.css}">
     </head>
     <body>
         <div id="content">
@@ -14,17 +15,21 @@
                 </form>
             </div>
 
-            <div id="user-display" th:insert="~{fragments/userDisplay :: user-display(${currentUser})}"></div>
+            <div th:if="${currentUser}" id="user-display" th:insert="~{fragments/userDisplay :: user-display(${currentUser})}"></div>
 
-            <form method="post" th:action="@{/crud/requestPage}" class="container" id="request-page-form" th:if="${page}">
+            <div th:if="${wheelPage != null and wheelUserCount != null and wheelWinner != null}" id="user-wheel" th:insert="~{ fragments/userWheel :: user-wheel( ${wheelPage}, ${wheelUserCount}, ${wheelWinner} ) }"></div>
+
+            <form th:if="${userPage != null}" method="post" th:action="@{/crud/spinWheel}" class="container" id="spin-wheel-form">
+                <button type="submit">Spin</button>
+            </form>
+            
+            <form th:if="${userPage != null}" method="post" th:action="@{/crud/requestPage}" class="container" id="request-page-form">
                 <label for="pageNumber">Page: <input type="number" name="pageNumber" id="pageNumber" th:value="${userPage.number}" required></label>
                 <label for="pageSize">Size: <input type="number" name="pageSize" id="pageSize" th:value="${userPage.size}" required></label>
                 <button type="submit">Request Page</button>
             </form>
 
-            <div id="user-table" th:insert="~{fragments/userTable :: user-table(${userPage})}"></div>
-
-            
+            <div th:if="${userPage != null}" id="user-table" th:insert="~{fragments/userTable :: user-table(${userPage})}"></div>
 
             <form method="post" th:action="@{/crud/create}" class="container">
                 <label for="username">Username: <input type="text" name="username" id="username" required></label>
