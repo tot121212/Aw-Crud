@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -14,10 +15,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.ui.Model;
 import org.springframework.util.StreamUtils;
 
 import com.crud_project.crud.entity.User;
+import com.crud_project.crud.entity.WheelSpinResult;
 import com.crud_project.crud.repository.UserProjection;
 import com.crud_project.crud.repository.UserRepo;
 
@@ -182,6 +183,10 @@ public class UserService {
         return projections;
     }
 
+    public Boolean getExistsByUsername(String username) {
+        return userRepo.existsByUserName(username);
+    }
+
     public UserProjection getUserProjectionByName(String username) {
         Optional<UserProjection> optionalUserProjection = userRepo.findUserProjectionByUserName(username);
         if (optionalUserProjection.isPresent()){
@@ -190,6 +195,16 @@ public class UserService {
         }
         log.warn("User with name: {} doesn't exist", username);
         return null;
+    }
+
+    public Page<String> getUserNamesByPageAndSize(Integer page, Integer size) {
+        if (page == null || size == null || page < 0 || size < 1) {
+            return Page.empty();
+        }
+        if (size > 100) {
+            size = 100;
+        }
+        return userRepo.findAllUserNames(PageRequest.of(page, size));
     }
 
     public Boolean getIsDeletedByName(String username) {
@@ -210,40 +225,48 @@ public class UserService {
      * @param size
      * @return
      */
-    public String spinWheel(Model model, String username, Integer page, Integer size) {
+    public WheelSpinResult spinWheel(String username, Integer page, Integer size) {
         // we dont have all this on the controller because 
         // it would be coming back to the service, which is unsafe
         // im just using userprojections, bc i already have a method for creating pages with them
         try {
-            UserProjection currentUser = getUserProjectionByName(username);
-            if (currentUser == null){
+            Boolean currentUserExists = getExistsByUsername(username);
+            if (!currentUserExists){
                 throw new Exception(String.format("User '%s' not found", username));
             }
-            Page<UserProjection> userProjections = getUserProjectionsByPageAndSize(page, size);
-            if (userProjections.isEmpty()){
-                throw new Exception("No users found");
+
+            List<String> participants = 
+                getUserNamesByPageAndSize(page, size)
+                .stream()
+                .collect(Collectors.toList());
+            if (participants.isEmpty()){
+                throw new Exception("No usernames found");
             }
-            List<UserProjection> userProjectionsList = userProjections.getContent();
-            if (userProjectionsList.isEmpty()){
-                throw new Exception("No users found");
+            if (!participants.contains(username)){
+                participants.add(username);
             }
-            if (!userProjectionsList.contains(currentUser)){
-                userProjectionsList.add(currentUser);
+
+            String winner = participants.get(
+                random.nextInt(participants.size()));
+            
+            User winnerUser = getUserByName(winner);
+            if (winnerUser == null){
+                throw new Exception(String.format("User '%s' not found", winner));
             }
-            UserProjection randomUserProjection = userProjectionsList.get(
-                random.nextInt(userProjectionsList.size()));
-            User randomUser = getUserByName(randomUserProjection.getUserName());
-            if (randomUser == null){
-                throw new Exception(String.format("User '%s' not found", randomUserProjection.getUserName()));
+            winnerUser.setIsDeleted(true);
+            User updatedWinner = updateUser(winnerUser); // update user on db
+            if (updatedWinner == null){
+                throw new Exception(String.format("User '%s' not updated on db", winnerUser));
             }
-            randomUser.setIsDeleted(true);
-            User updatedUser = updateUser(randomUser); // update user on db
-            if (updatedUser == null){
-                throw new Exception(String.format("User '%s' not updated on db", randomUserProjection.getUserName()));
-            }
-            return updatedUser.getUserName();
+            
+            return WheelSpinResult
+                .builder()
+                .winnerName(updatedWinner.getUserName())
+                .participants(participants)
+                .build();
         } catch (Exception e) {
             log.warn(e.getMessage());
+            //e.printStackTrace();
             return null;
         }
     }

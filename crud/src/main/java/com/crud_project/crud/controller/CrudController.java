@@ -1,17 +1,21 @@
 package com.crud_project.crud.controller;
 
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.SessionAttribute;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.crud_project.crud.entity.PageState;
+import com.crud_project.crud.entity.WheelSpinResult;
 import com.crud_project.crud.service.AuthService;
 import com.crud_project.crud.service.UserService;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -22,30 +26,23 @@ import lombok.extern.slf4j.Slf4j;
 public class CrudController {
     private final UserService userService;
     private final AuthService authService;
+    
 
     @GetMapping("") //"/crud"
     public String getCrud(
-            Model model,
-            Authentication authentication,
-            @RequestParam(defaultValue = "0") Integer pageNumber,
-            @RequestParam(defaultValue = "10") Integer pageSize,
-            @RequestParam(required = false) String filter,
-            @RequestParam(required = false) String wheelWinner) {
+        Model model,
+        @SessionAttribute(SessionKeys.CUR_USER_NAME) String name, 
+        @SessionAttribute(SessionKeys.CUR_USER_PAGE_STATE) PageState pageState
+    ) {
+        model.addAttribute( // Needs to be actively checked for from the db everytime
+            ModelKeys.CUR_USER_IS_DELETED, 
+            userService.getIsDeletedByName(name));
         model.addAttribute(
-            "isDeleted",
-            userService.getIsDeletedByName(authentication.getName()));
+            ModelKeys.CUR_USER_PROJECTION,
+            userService.getUserProjectionByName(name));
         model.addAttribute(
-            "currentUser",
-            userService.getUserProjectionByName(authentication.getName()));
-        model.addAttribute(
-            "userPage", 
-            userService.getUserProjectionsByPageAndSize(pageNumber, pageSize));
-        model.addAttribute(
-            "userPageFilter", 
-            filter);
-        if (wheelWinner != null) {
-            model.addAttribute("wheelWinner", wheelWinner);
-        }
+            ModelKeys.REQ_PAGE_PROJECTIONS, 
+            userService.getUserProjectionsByPageAndSize(pageState.getPage(), pageState.getSize()));
         return "crud";
     }
 
@@ -73,8 +70,9 @@ public class CrudController {
     // Probably attach all this to the userTable
     @PostMapping("/create")
     public String createPost(
-            @RequestParam String username, 
-            @RequestParam String password) {
+        @RequestParam String username, 
+        @RequestParam String password
+    ) {
         return "redirect:/crud" + 
         "?registerUser=" + authService.registerUser(username, password) + 
         "&registerUserUsername=" + username;
@@ -82,36 +80,34 @@ public class CrudController {
 
     @PostMapping("/requestPage")
     public String requestPagePost(
-            Model model,
-            @RequestParam(defaultValue = "0") Integer pageNumber, 
-            @RequestParam(defaultValue = "10") Integer pageSize, 
-            @RequestParam(required = false) String filter){
-        return "redirect:/crud" + 
-        "?pageNumber=" + pageNumber + 
-        "&pageSize=" + pageSize + 
-        "&filter=" + filter + 
-        "#request-page-form";
+        HttpSession session, 
+        @RequestParam(defaultValue = "0", required = true) Integer pageNumber, 
+        @RequestParam(defaultValue = "10", required = true) Integer pageSize//, 
+        //@RequestParam(required = false) String filter,
+        //@RequestParam(required = false) String sort
+    ) {
+        session.setAttribute(
+            SessionKeys.CUR_USER_PAGE_STATE,
+            PageState.builder()
+                .page(pageNumber)
+                .size(pageSize)
+                .build());
+        return "redirect:/crud" + "#request-page-form";
     }
 
     @PostMapping("/spinWheel")
     public String spinWheelPost(
-            Model model, 
-            Authentication authentication,
-            @RequestParam(defaultValue = "0") Integer pageNumber,
-            @RequestParam(defaultValue = "10") Integer pageSize) {
-        String isDeletedUser = userService.spinWheel(model, authentication.getName(), pageNumber, pageSize);
-        // add wheel data to the session since its hard to persist everything with uri
-
-        // js script will be within the fragment that will use a
-        // function that takes uri param named wheelLoser and 
-        // just calculate the velocity needed 
-        // to propel the wheel as such that the friction causes it to 
-        // slow perfectly to a specified position
-
-        return "redirect:/crud" + 
-        "?wheelWinner=" + isDeletedUser + 
-        "&pageNumber=" + pageNumber + 
-        "&pageSize=" + pageSize + 
-        "#user-wheel";
+        @SessionAttribute(SessionKeys.CUR_USER_NAME) String name, 
+        @SessionAttribute(SessionKeys.CUR_USER_PAGE_STATE) PageState pageState, 
+        RedirectAttributes redirectAttributes
+    ) {
+        WheelSpinResult wheelSpinResult = userService.spinWheel(
+            name, 
+            pageState.getPage(), 
+            pageState.getSize()
+        );
+        redirectAttributes.addFlashAttribute(ModelKeys.WHEEL_WINNER, wheelSpinResult.getWinnerName());
+        redirectAttributes.addFlashAttribute(ModelKeys.WHEEL_PARTICIPANTS, wheelSpinResult.getParticipants());
+        return "redirect:/crud" + "#user-wheel";
     }
 }

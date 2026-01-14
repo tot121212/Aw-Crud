@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.crud_project.crud.service.AuthService;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -30,7 +31,7 @@ public class AuthController {
     );
 
     // This redirects anyone who is already authenticated to the /crud page
-    public String authRedirect(HttpServletRequest request, Authentication authentication){
+    public String authRedirect(HttpServletRequest request, Authentication authentication, HttpSession session){
         // if none provided default to home
         if (request == null) {
             log.info("No request provided, directing to /home");
@@ -48,8 +49,8 @@ public class AuthController {
     }
     
     @GetMapping({"/login", "/register"})
-    public String loginGet(HttpServletRequest request, Authentication authentication) {
-        return authRedirect(request, authentication);
+    public String loginGet(HttpServletRequest request, Authentication authentication, HttpSession session) {
+        return authRedirect(request, authentication, session);
     }
 
     @PostMapping("/register")
