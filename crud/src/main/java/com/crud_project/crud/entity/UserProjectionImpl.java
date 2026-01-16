@@ -13,25 +13,17 @@ import lombok.Getter;
 @Builder
 @AllArgsConstructor
 public class UserProjectionImpl implements UserProjection, Serializable {
-    private final Integer id;
+    private final int id;
     private final String userName;
-    private final Integer awCrudsPerformed;
-    private final Boolean isDeleted;
+    private final int awCrudsPerformed;
+    private final boolean deleted;
 
     public static UserProjectionImpl from(UserProjection projection) {
         return UserProjectionImpl.builder()
             .id(projection.getId())
             .userName(projection.getUserName())
-            .awCrudsPerformed(
-                projection.getAwCrudsPerformed() != null 
-                    ? projection.getAwCrudsPerformed() 
-                    : 0
-            )
-            .isDeleted(
-                projection.getIsDeleted() != null 
-                    ? projection.getIsDeleted() 
-                    : false
-            )
+            .awCrudsPerformed(projection.getAwCrudsPerformed())
+            .deleted(projection.isDeleted())
             .build();
     }
 }

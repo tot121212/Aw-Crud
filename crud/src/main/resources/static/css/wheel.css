@@ -46,16 +46,23 @@
 }
 
 
-.user-wheel li span {
+:where(.user-wheel) li span {
     display: grid;
-    place-items: center;
     width: calc(48cqi);
     height: 100%;
     transform-origin: center;
+    place-items: center left;
+}
+
+:where(.user-wheel) li:not(.flip) span {
+    place-items: center left;
+    padding-left: 1rem;
 }
 
 :where(.user-wheel) li.flip span {
     transform: rotate(180deg);
+    place-items: center right;
+    padding-right: 1rem;
 }
 
 .user-wheel[data-items="1"] li {

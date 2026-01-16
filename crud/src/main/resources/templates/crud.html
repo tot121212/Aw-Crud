@@ -11,27 +11,27 @@
     th:with="currentUser_name=${session.currentUser_name}, 
              currentUser_pageState=${session.currentUser_pageState}">
         <div id="content" 
-        th:if="${currentUser_userProjection != null and currentUser_userProjection.isDeleted != null}">
-        
+        th:if="${currentUser_userProjectionImpl != null}">
             <div id="header" class="container">
-                <h1>Aw CRUD...</h1>
+                <h1 class="left color-cyan style-header" >Aw CRUD...</h1>
 
-                <div th:switch="${currentUser_userProjection.isDeleted}">
-                    <div th:case="true">
-                        Goodbye, <span class="color-crimson" th:text="${currentUser_userProjection?.userName}"></span>...
-                    </div>
-                    <div th:case="false">
-                        Hello, <span th:text="${currentUser_userProjection?.userName}"></span>!
-                    </div>
+                <div th:switch="${currentUser_userProjectionImpl.isDeleted}">
+                    <th:block th:case="true">
+                        Goodbye, <span class="color-crimson" th:text="${currentUser_userProjectionImpl?.getUserName()}"></span>...
+                    </th:block>
+                    <th:block th:case="false">
+                        Hello, <span th:text="${currentUser_userProjectionImpl?.getUserName()}"></span>!
+                    </th:block>
                 </div>
 
                 <form method="post" th:action="@{/auth/logout}" id="logout-form">
                     <button type="submit">Logout</button>
                 </form>
             </div>
-            
-            <div th:replace="~{fragments/crudMain :: crud-main}"> </div>
-
+            <div id="main" class="container" th:switch="${currentUser_userProjectionImpl.isDeleted}">
+                <th:block th:case="false" th:insert="~{fragments/crudMain :: crud-main}"></th:block>
+                <th:block th:case="true" th:insert="~{fragments/userGravestone :: user-gravestone(${currentUser_userProjectionImpl})}"></th:block>
+            </div>
         </div>
         <script th:src="@{/js/wheel.js}"></script>
     </body>

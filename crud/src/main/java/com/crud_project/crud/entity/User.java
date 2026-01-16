@@ -21,7 +21,7 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(nullable = false, unique = true)
-    private Integer id;
+    private int id;
 
     @Column(nullable = false, unique = true)
     private String userName;
@@ -30,11 +30,11 @@ public class User {
     private String hashedPassword;
 
     @Column(nullable = false)
-    private Integer awCrudsPerformed = 0;
+    private int awCrudsPerformed = 0;
     
     @Column(nullable = false)
-    private Boolean isDeleted = false;
+    private boolean deleted = false;
 
     @Version
-    private Long version;
+    private long version;
 }

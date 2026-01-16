@@ -4,7 +4,7 @@ public final class ModelKeys {
     private ModelKeys() {}
     
     // Current user attributes
-    public static final String CUR_USER_PROJECTION = "currentUser_userProjection";
+    public static final String CUR_USER_PROJECTION = "currentUser_userProjectionImpl";
     
     // Request page attributes
     public static final String REQ_PAGE_PROJECTIONS = "requestPage_userProjections";

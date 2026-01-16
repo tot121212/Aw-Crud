@@ -34,8 +34,9 @@ public class CrudController {
         @SessionAttribute(SessionKeys.CUR_USER_NAME) String name, 
         @SessionAttribute(SessionKeys.CUR_USER_PAGE_STATE) PageState pageState
     ) {
+        //log.info(String.valueOf(userService.getUserProjectionByName(name).isDeleted()));
         model.addAttribute(
-            ModelKeys.CUR_USER_PROJECTION,
+            ModelKeys.CUR_USER_PROJECTION, 
             userService.getUserProjectionByName(name));
         model.addAttribute(
             ModelKeys.REQ_PAGE_PROJECTIONS, 

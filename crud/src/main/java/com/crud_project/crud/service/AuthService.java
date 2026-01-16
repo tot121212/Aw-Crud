@@ -16,7 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 public class AuthService {
     private final UserService userService;
 
-    public Boolean registerUser(String username, String password){
+    public boolean registerUser(String username, String password){
         log.debug("Attempting to register user: {}", username);
         if (userService.getUserByName(username) != null) {
             log.warn("User {} already exists", username);

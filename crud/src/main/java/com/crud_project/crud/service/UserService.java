@@ -101,7 +101,7 @@ public class UserService {
         }
     }
 
-    public Boolean createTestUsers(){
+    public boolean createTestUsers(){
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
         try {
@@ -129,7 +129,7 @@ public class UserService {
         return true;
     }
 
-    public Boolean deleteTestUsers(){
+    public boolean deleteTestUsers(){
         try {
             List<String> usernames = getResourceAsListOfStr(dbUsernamesResource);
             
@@ -151,7 +151,7 @@ public class UserService {
         }
     }
 
-    public Boolean deleteAllUsers(){
+    public boolean deleteAllUsers(){
         try {
             userRepo.deleteAll();
             log.info("Deleted all users");
@@ -183,7 +183,7 @@ public class UserService {
         return projections;
     }
 
-    public Boolean getExistsByUsername(String username) {
+    public boolean getExistsByUsername(String username) {
         return userRepo.existsByUserName(username);
     }
 
@@ -207,14 +207,8 @@ public class UserService {
         return userRepo.findAllUserNames(PageRequest.of(page, size));
     }
 
-    public Boolean getIsDeletedByName(String username) {
-        Optional<Boolean> optionalIsDeleted = userRepo.findIsDeletedByUserName(username);
-        if (optionalIsDeleted.isPresent()){
-            log.info("User with name: {} exists", username);
-            return optionalIsDeleted.get();
-        }
-        log.warn("User with name: {} doesn't exist", username);
-        return null;
+    public boolean getDeletedByName(String username) {
+        return userRepo.findDeletedByUserName(username);
     }
 
     /**
@@ -230,7 +224,7 @@ public class UserService {
         // it would be coming back to the service, which is unsafe
         // im just using userprojections, bc i already have a method for creating pages with them
         try {
-            Boolean currentUserExists = getExistsByUsername(username);
+            boolean currentUserExists = getExistsByUsername(username);
             if (!currentUserExists){
                 throw new Exception(String.format("User '%s' not found", username));
             }
@@ -253,7 +247,7 @@ public class UserService {
             if (winnerUser == null){
                 throw new Exception(String.format("User '%s' not found", winner));
             }
-            winnerUser.setIsDeleted(true);
+            winnerUser.setDeleted(true);
             User updatedWinner = updateUser(winnerUser); // update user on db
             if (updatedWinner == null){
                 throw new Exception(String.format("User '%s' not updated on db", winnerUser));

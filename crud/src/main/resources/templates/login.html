@@ -12,7 +12,7 @@
             </div>
             <div id="main" class="container">
                 <h2>Login</h2>
-                <div th:if="${param.error}" style="color: rgb(255, 0, 119);">
+                <div th:if="${param.error}" class="color-crimson">
                     Invalid username and/or password!
                 </div>
                 <div th:if="${param.logout}">
