@@ -1,5 +1,5 @@
-<div class="user-display container" 
-th:fragment="user-display(user)"> <!-- User displays here -->
+<div th:fragment="user-display(user)"
+class="user-display container">
     <div th:if="${user}">
         <h2>Current User</h2>
         <table>

@@ -3,75 +3,36 @@
     <head>
         <meta charset="UTF-8">
         <title>Aw CRUD</title>
+        <link rel="stylesheet" type="text/css" th:href="@{/css/css-reset.css}">
         <link rel="stylesheet" type="text/css" th:href="@{/css/main.css}">
         <link rel="stylesheet" type="text/css" th:href="@{/css/wheel.css}">
     </head>
     <body 
     th:with="currentUser_name=${session.currentUser_name}, 
-            currentUser_pageState=${session.currentUser_pageState}">
-        <div id="content">
+             currentUser_pageState=${session.currentUser_pageState}">
+        <div id="content" 
+        th:if="${currentUser_userProjection != null and currentUser_userProjection.isDeleted != null}">
+        
             <div id="header" class="container">
                 <h1>Aw CRUD...</h1>
+
+                <div th:switch="${currentUser_userProjection.isDeleted}">
+                    <div th:case="true">
+                        Goodbye, <span class="color-crimson" th:text="${currentUser_userProjection?.userName}"></span>...
+                    </div>
+                    <div th:case="false">
+                        Hello, <span th:text="${currentUser_userProjection?.userName}"></span>!
+                    </div>
+                </div>
+
                 <form method="post" th:action="@{/auth/logout}" id="logout-form">
                     <button type="submit">Logout</button>
                 </form>
             </div>
+            
+            <div th:replace="~{fragments/crudMain :: crud-main}"> </div>
 
-            <div 
-            th:if="${currentUser_userProjection}" id="user-display" 
-            th:insert="~{fragments/userDisplay :: user-display(${currentUser_userProjection})}"></div>
-
-            <div 
-            th:if="${wheel_participants != null and wheel_winner != null}" id="user-wheel" 
-            th:insert="~{ fragments/userWheel :: user-wheel( ${wheel_participants}, ${wheel_winner} ) }"></div>
-
-            <form 
-            th:if="${requestPage_userProjections != null}" method="post" 
-            th:action="@{/crud/spinWheel}" class="container" id="spin-wheel-form">
-                <button type="submit">Spin</button>
-            </form>
-
-            <form 
-            th:if="${currentUser_pageState != null}" method="post" 
-            th:action="@{/crud/requestPage}" class="container" id="request-page-form">
-                <label for="pageNumber">Page: <input type="number" name="pageNumber" id="pageNumber" 
-                    th:value="${currentUser_pageState.page}" required></label>
-                <label for="pageSize">Size: <input type="number" name="pageSize" id="pageSize" 
-                    th:value="${currentUser_pageState.size}" required></label>
-                <button type="submit">Request Page</button>
-            </form>
-
-            <div th:if="${requestPage_userProjections != null}" id="user-table" 
-            th:insert="~{fragments/userTable :: user-table(${requestPage_userProjections})}"></div>
-
-            <form method="post" th:action="@{/crud/create}" class="container">
-                <label for="username">Username: <input type="text" name="username" id="username" required></label>
-                <label for="password">Password: <input type="text" name="password" id="password" required></label>
-                <button type="submit">Create</button>
-                <div th:switch="${param.registerUser != null ? param.registerUser[0] : ''}">
-                    <div th:case="'true'" style="color: rgb(0, 157, 255);">User registration succeeded for: 
-                        <span th:text="${param.registerUserUsername}"></span></div>
-                    <div th:case="'false'" style="color: rgb(255, 0, 0);">User registration failed for: 
-                        <span th:text="${param.registerUserUsername}"></span></div>
-                </div>
-            </form>
-
-            <div class="container" style="display: flex; flex-direction: column; gap: 10px;">
-                <form method="post" th:action="@{/crud/create-test-users}" >
-                    <button type="submit">DEBUG: Create Test Users</button>
-                </form>
-
-                <form method="post" th:action="@{/crud/delete-test-users}">
-                    <button type="submit" 
-                    onclick="return confirm('Are you sure you want to delete all test users?')">DEBUG: Delete Test Users</button>
-                </form>
-
-                <form method="post" th:action="@{/crud/delete-all-users}">
-                    <button type="submit" 
-                    onclick="return confirm('Are you sure you want to delete ALL users? This cannot be undone!')">DEBUG: Delete ALL Users</button>
-                </form>
-
-            </div>
         </div>
+        <script th:src="@{/js/wheel.js}"></script>
     </body>
 </html>

@@ -167,7 +167,7 @@ public class UserService {
         if (page == null || 
             size == null || 
             page < 0 || 
-            size < 1) {
+            size < 2) {
             return Page.empty();
         }
         if (size > 100) {

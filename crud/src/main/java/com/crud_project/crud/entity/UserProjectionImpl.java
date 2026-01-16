@@ -1,6 +1,8 @@
-package com.crud_project.crud.repository;
+package com.crud_project.crud.entity;
 
 import java.io.Serializable;
+
+import com.crud_project.crud.repository.UserProjection;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,8 +22,16 @@ public class UserProjectionImpl implements UserProjection, Serializable {
         return UserProjectionImpl.builder()
             .id(projection.getId())
             .userName(projection.getUserName())
-            .awCrudsPerformed(projection.getAwCrudsPerformed())
-            .isDeleted(projection.getIsDeleted())
+            .awCrudsPerformed(
+                projection.getAwCrudsPerformed() != null 
+                    ? projection.getAwCrudsPerformed() 
+                    : 0
+            )
+            .isDeleted(
+                projection.getIsDeleted() != null 
+                    ? projection.getIsDeleted() 
+                    : false
+            )
             .build();
     }
 }

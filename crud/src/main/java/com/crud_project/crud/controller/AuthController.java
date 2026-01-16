@@ -57,7 +57,7 @@ public class AuthController {
     public String registerPost(@RequestParam String username, @RequestParam String password) {
         // check if username already exists
         if (!authService.registerUser(username, password)) {
-            return "redirect:/auth/register";
+            return "redirect:/auth/register?error";
         }
         return "redirect:/auth/login";
     }

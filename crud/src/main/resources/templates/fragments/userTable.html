@@ -1,5 +1,5 @@
-<div class="user-table container" 
-th:fragment="user-table(page)">
+<div th:fragment="user-table(page)"
+class="user-table container">
     <div th:if="${page}">
         <h2>Users</h2>
         <table>
@@ -11,7 +11,7 @@ th:fragment="user-table(page)">
                 </tr>
             </thead>
             <tbody>
-                <tr th:each="user : ${page.content}">
+                <tr th:each="user : ${page?.content}">
                     <td th:text="${user.id}"></td>
                     <td th:text="${user.userName}"></td>
                     <td th:text="${user.awCrudsPerformed}"></td>

@@ -7,18 +7,22 @@
     </head>
     <body>
         <div id="content">
-            <div id="header">
+            <div id="header" class="container">
                 <h1>Aw CRUD...</h1>
             </div>
-            <h2>Register</h2>
-            <div th:if="${param.error}" style="color: rgb(255, 0, 119);">
-                Invalid username and/or password!
+            <div id="main" class="container">
+                <h2>Register</h2>
+                
+                <form method="post" th:action="@{/auth/register}">
+                    <div><label for="username">Username: <input type="text" name="username" id="username" autocomplete="username" required/></label></div>
+                    <div><label for="password">Password: <input type="password" name="password" id="password" autocomplete="new-password" required/></label></div>
+                    <div><input type="submit" value="Register"/></div>
+                </form>
+
+                <h2 th:if="${param.error}" style="color: rgb(255, 0, 119);">
+                    User already exists!
+                </h2>
             </div>
-            <form method="post" th:action="@{/auth/register}">
-                <div><label for="username">Username: <input type="text" name="username" id="username" autocomplete="username" required/></label></div>
-                <div><label for="password">Password: <input type="password" name="password" id="password" autocomplete="new-password" required/></label></div>
-                <div><input type="submit" value="Register"/></div>
-            </form>
         </div>
     </body>
 </html>

@@ -4,7 +4,6 @@ public final class ModelKeys {
     private ModelKeys() {}
     
     // Current user attributes
-    public static final String CUR_USER_IS_DELETED = "currentUser_isDeleted";
     public static final String CUR_USER_PROJECTION = "currentUser_userProjection";
     
     // Request page attributes

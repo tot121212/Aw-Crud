@@ -11,7 +11,7 @@ import com.crud_project.crud.entity.User;
 
 // Repository interface that provide CRUD operations for User entity
 public interface UserRepo extends JpaRepository<User, Integer> {
-    final static String USER_PROJECTION_FIELDS = "u.id as id, u.userName as userName, u.awCrudsPerformed as awCrudsPerformed";
+    final static String USER_PROJECTION_FIELDS = "u.id as id, u.userName as userName, u.awCrudsPerformed as awCrudsPerformed, u.isDeleted as isDeleted";
 
     @Query("SELECT u FROM User u WHERE u.userName = :userName")
     Optional<User> findByUserName(String userName);

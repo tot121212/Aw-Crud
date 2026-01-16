@@ -34,9 +34,6 @@ public class CrudController {
         @SessionAttribute(SessionKeys.CUR_USER_NAME) String name, 
         @SessionAttribute(SessionKeys.CUR_USER_PAGE_STATE) PageState pageState
     ) {
-        model.addAttribute( // Needs to be actively checked for from the db everytime
-            ModelKeys.CUR_USER_IS_DELETED, 
-            userService.getIsDeletedByName(name));
         model.addAttribute(
             ModelKeys.CUR_USER_PROJECTION,
             userService.getUserProjectionByName(name));

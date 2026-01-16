@@ -6,16 +6,89 @@
     direction: ltr;
     display: grid;
     place-content: center start;
+    clip-path: inset(0 0 0 0 round 50%);
 }
 
-.user-wheel li {
-  align-content: center;
-  background: deepskyblue;
-  display: grid;
-  font-size: 5cqi;
-  grid-area: 1 / -1;
-  list-style: none;
-  padding-left: 1ch;
-  transform-origin: center right;
-  width: 50cqi;
+.wheel-and-needle {
+    position: relative;
+}
+
+.needle {
+    position: absolute;
+    top: 50%;
+    left: 100%;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+    width: 20px;
+    height: 20px;
+    display: flex;
+}
+
+.needle * {
+    width: 100%;
+}
+
+:where(.user-wheel) li {
+    align-content: center;
+    display: grid;
+    font-size: 5cqi;
+    color: black;
+    grid-area: 1 / -1;
+    list-style: none;
+    transform-origin: center right;
+    width: 50cqi;
+    aspect-ratio: 1/calc(2*tan(180deg/var(--_items)));
+
+    --_rotate: calc(360deg / var(--_items) * calc(var(--_idx)));
+    rotate: var(--_rotate);
+    background: hsl(calc(360deg / var(--_items) * calc(var(--_idx))), 100%, 75%);
+    clip-path: polygon(0% 0%, 100% 50%, 0% 100%);
+}
+
+
+.user-wheel li span {
+    display: grid;
+    place-items: center;
+    width: calc(48cqi);
+    height: 100%;
+    transform-origin: center;
+}
+
+:where(.user-wheel) li.flip span {
+    transform: rotate(180deg);
+}
+
+.user-wheel[data-items="1"] li {
+  aspect-ratio: 1 / 1;
+  display: block;
+  rotate: 0;
+  clip-path: none;
+  width: 100cqi;
+}
+
+.user-wheel[data-items="2"] li {
+  height: 100cqi;
+  clip-path: none;
+}
+
+.user-wheel[data-items="3"] li {
+  aspect-ratio: 1 / 2;
+  clip-path: polygon(-35% -100%, 100% 50%, 0% 145%);
+}
+
+.wheel-blink {
+    animation: 
+        blink 1s 3;
+}
+
+@keyframes blink {
+  0% {
+    opacity: 1;
+  }
+  75% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }
