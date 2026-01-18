@@ -22,6 +22,7 @@ import com.crud_project.crud.entity.WheelSpinResult;
 import com.crud_project.crud.repository.UserProjection;
 import com.crud_project.crud.repository.UserRepo;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -253,13 +254,15 @@ public class UserService {
      * @param size
      * @return WheelSpinResult || null || throws Unchecked (which will be caught by @Transactional)
      */
+    @Transactional
     public WheelSpinResult spinWheel(String username, Integer page, Integer size) {
-        // we dont have all this on the controller because 
-        // it would be coming back to the service, which is unsafe
-        // im just using userprojections, bc i already have a method for creating pages with them
         try {
-            boolean currentUserExists = getExistsByUsername(username);
-            if (!currentUserExists){
+            
+            if (getDeadByName(username)){
+                throw new Exception(String.format("User '%s' is dead", username));
+            }
+            User currentUser = getUserByName(username);
+            if (currentUser == null){
                 throw new Exception(String.format("User '%s' not found", username));
             }
 
@@ -274,23 +277,32 @@ public class UserService {
                 participants.add(username);
             }
 
-            String winner = participants.get(
+            String winnerName = participants.get(
                 random.nextInt(participants.size()));
             
-            User winnerUser = getUserByName(winner);
+            User winnerUser = getUserByName(winnerName);
             if (winnerUser == null){
-                throw new Exception(String.format("User '%s' not found", winner));
+                throw new Exception(String.format("User '%s' not found", winnerName));
             }
+            
             winnerUser.setDead(true);
+            winnerUser = updateUser(winnerUser); // update user on db
+
+            currentUser.setAwCrudsPerformed(currentUser.getAwCrudsPerformed() + 1);
+            updateUser(currentUser);
+
             return WheelSpinResult
                 .builder()
-                .winnerName(updatedWinner.getUserName())
+                .winnerName(winnerUser.getUserName())
                 .participants(participants)
                 .build();
+            
         } catch (Exception e) {
             log.warn(e.getMessage());
             //e.printStackTrace();
             return null;
         }
+
+        
     }
 }
