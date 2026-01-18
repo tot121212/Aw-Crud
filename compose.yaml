@@ -1,0 +1,23 @@
+services:
+  app:
+    image: aw-crud-app:latest
+    build:
+      context: .
+    container_name: aw-crud-app
+    depends_on:
+      - db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/${DB_NAME}
+      SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - ${SERVER_EXTERNAL_PORT}:9797
+  db:
+    image: postgres:15.2
+    container_name: aw-crud-db
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+    - ${DB_EXTERNAL_PORT}:5432
