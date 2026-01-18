@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StreamUtils;
 
@@ -30,6 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 // All actual db logic goes here
 public class UserService {
+    private final PasswordEncoder passwordEncoder;
     private final UserRepo userRepo;
     private final Random random = new Random();
 
@@ -102,15 +103,13 @@ public class UserService {
     }
 
     public boolean createTestUsers(){
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-
         try {
             List<String> usernames = getResourceAsListOfStr(dbUsernamesResource);
             log.warn("DEBUG: usernames: {}", usernames);
             Collections.shuffle(usernames);
 
             String password = readResourceFile(dbPasswordResource);
-            String hashedPassword = encoder.encode(password);
+            String hashedPassword = passwordEncoder.encode(password);
             
             for (String username : usernames) {
                 User user = new User();

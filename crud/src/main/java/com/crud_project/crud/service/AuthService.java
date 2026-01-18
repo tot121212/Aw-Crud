@@ -1,7 +1,7 @@
 package com.crud_project.crud.service;
 
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.crud_project.crud.entity.User;
@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class AuthService {
+    private final PasswordEncoder passwordEncoder;
     private final UserService userService;
 
     public boolean registerUser(String username, String password){
@@ -23,8 +24,7 @@ public class AuthService {
             return false;
         }
         // Hash password and save user
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        String hashedPassword = encoder.encode(password);
+        String hashedPassword = passwordEncoder.encode(password);
         User user = new User();
         user.setUserName(username);
         user.setHashedPassword(hashedPassword);
