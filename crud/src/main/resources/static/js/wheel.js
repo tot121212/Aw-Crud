@@ -103,9 +103,7 @@ function spinWheel(wheelElement, winner, fullRotations = 3) {
     
     updateFlips();
 
-    // Log winner after animation
 animation.addEventListener('finish', () => {
-        console.log('Winner:', winner, 'at index:', winnerIndex + 1);
         // Add a new event listener to make the winner li blink
         const blinkDuration = 3000; // 3 seconds
         const winnerLi = items[winnerIndex];
