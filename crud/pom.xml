@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.crud_project</groupId>
 	<artifactId>crud</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1</version>
 	<name>crud</name>
 	<description>Demo project for Spring Boot</description>
 	<url/>
@@ -50,6 +50,11 @@
 	        <groupId>org.springframework.boot</groupId>
 	        <artifactId>spring-boot-starter-flyway</artifactId>
 	    </dependency>
+        
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-database-postgresql</artifactId>
+        </dependency>
 
 	    <dependency>
 	        <groupId>org.springframework.boot</groupId>
@@ -104,14 +109,14 @@
 	</dependencies>
 
 	<build>
+    
 		<plugins>
-        
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
-
 		</plugins>
+
 	</build>
 
 </project>
