@@ -4,5 +4,5 @@ public interface UserProjection {
     int getId();
     String getUserName();
     int getAwCrudsPerformed();
-    boolean isDeleted();
+    boolean isDead();
 }

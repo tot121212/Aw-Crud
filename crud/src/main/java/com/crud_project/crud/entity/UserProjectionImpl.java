@@ -16,14 +16,14 @@ public class UserProjectionImpl implements UserProjection, Serializable {
     private final int id;
     private final String userName;
     private final int awCrudsPerformed;
-    private final boolean deleted;
+    private final boolean dead;
 
     public static UserProjectionImpl from(UserProjection projection) {
         return UserProjectionImpl.builder()
             .id(projection.getId())
             .userName(projection.getUserName())
             .awCrudsPerformed(projection.getAwCrudsPerformed())
-            .deleted(projection.isDeleted())
+            .dead(projection.isDead())
             .build();
     }
 }

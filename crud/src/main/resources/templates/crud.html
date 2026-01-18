@@ -15,7 +15,7 @@
             <div id="header" class="container">
                 <h1 class="left color-cyan style-header" >Aw CRUD...</h1>
 
-                <div th:switch="${currentUser_userProjectionImpl.isDeleted}">
+                <div th:switch="${currentUser_userProjectionImpl.isDead}">
                     <th:block th:case="true">
                         Goodbye, <span class="color-crimson" th:text="${currentUser_userProjectionImpl?.getUserName()}"></span>...
                     </th:block>
@@ -28,7 +28,7 @@
                     <button type="submit">Logout</button>
                 </form>
             </div>
-            <div id="main" class="container" th:switch="${currentUser_userProjectionImpl.isDeleted}">
+            <div id="main" class="container" th:switch="${currentUser_userProjectionImpl.isDead}">
                 <th:block th:case="false" th:insert="~{fragments/crudMain :: crud-main}"></th:block>
                 <th:block th:case="true" th:insert="~{fragments/userGravestone :: user-gravestone(${currentUser_userProjectionImpl})}"></th:block>
             </div>

@@ -33,7 +33,7 @@ public class User {
     private int awCrudsPerformed = 0;
     
     @Column(nullable = false)
-    private boolean deleted = false;
+    private boolean dead = false;
 
     @Version
     private long version;

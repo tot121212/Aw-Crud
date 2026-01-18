@@ -95,10 +95,10 @@ public class UserService {
     public void deleteUserById (Integer id) {
         userRepo.deleteById(id);
         if (getUserById(id) == null){
-            log.info("User with id: {} was deleted", id);
+            log.info("User with id: {} was dead", id);
         }
         else{
-            log.warn("User with id: {} was not deleted", id);
+            log.warn("User with id: {} was not dead", id);
         }
     }
 
@@ -206,12 +206,19 @@ public class UserService {
         return userRepo.findAllUserNames(PageRequest.of(page, size));
     }
 
-    public boolean getDeletedByName(String username) {
-        return userRepo.findDeletedByUserName(username);
-    }
-
     /**
-     *  Spin the wheel and return the name of the user that was "deleted"
+     * @param username
+     * @return boolean || null
+     */
+    public Boolean getDeadByName(String username) {
+        Optional<Boolean> optionalIsDead = userRepo.findDeadByUserName(username);
+        if (optionalIsDead.isPresent()){
+            return optionalIsDead.get();
+        }
+        return null;
+    }
+    /**
+     *  Spin the wheel and return the name of the user that was "dead" or null
      * @param model
      * @param username
      * @param page
@@ -246,12 +253,7 @@ public class UserService {
             if (winnerUser == null){
                 throw new Exception(String.format("User '%s' not found", winner));
             }
-            winnerUser.setDeleted(true);
-            User updatedWinner = updateUser(winnerUser); // update user on db
-            if (updatedWinner == null){
-                throw new Exception(String.format("User '%s' not updated on db", winnerUser));
-            }
-            
+            winnerUser.setDead(true);
             return WheelSpinResult
                 .builder()
                 .winnerName(updatedWinner.getUserName())

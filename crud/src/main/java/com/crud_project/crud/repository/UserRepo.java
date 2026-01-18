@@ -11,13 +11,13 @@ import com.crud_project.crud.entity.User;
 
 // Repository interface that provide CRUD operations for User entity
 public interface UserRepo extends JpaRepository<User, Integer> {
-    final static String USER_PROJECTION_FIELDS = "u.id as id, u.userName as userName, u.awCrudsPerformed as awCrudsPerformed, u.deleted as deleted";
+    final static String USER_PROJECTION_FIELDS = "u.id as id, u.userName as userName, u.awCrudsPerformed as awCrudsPerformed, u.dead as dead";
 
     @Query("SELECT u FROM User u WHERE u.userName = :userName")
     Optional<User> findByUserName(String userName);
 
-    @Query("SELECT u.deleted FROM User u WHERE u.userName = :userName")
-    boolean findDeletedByUserName(String userName);
+    @Query("SELECT u.dead FROM User u WHERE u.userName = :userName")
+    Optional<Boolean> findDeadByUserName(String userName);
 
     @Query("SELECT " + USER_PROJECTION_FIELDS + " FROM User u WHERE u.userName = :userName")
     Optional<UserProjection> findUserProjectionByUserName(String userName);
