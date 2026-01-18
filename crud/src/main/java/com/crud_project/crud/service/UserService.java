@@ -39,6 +39,7 @@ public class UserService {
     @Value("classpath:static/data/dbPassword.txt")
     private Resource dbPasswordResource;
 
+
     private String readResourceFile(Resource resource) throws Exception{
         try(InputStream inputStream = resource.getInputStream()){
             return StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
@@ -102,6 +103,11 @@ public class UserService {
         }
     }
 
+    /**
+     * 
+     * @return boolean
+     */
+    @Transactional
     public boolean createTestUsers(){
         try {
             List<String> usernames = getResourceAsListOfStr(dbUsernamesResource);
@@ -119,15 +125,17 @@ public class UserService {
                 createUser(user);
             }
             log.info("Created test users");
+            return true;
             
         } catch (Exception e) {
             log.error("Error creating test users: {}", e.getMessage());
             return false;
         }
-
-        return true;
     }
 
+    /**
+     * @return boolean
+     */
     public boolean deleteTestUsers(){
         try {
             List<String> usernames = getResourceAsListOfStr(dbUsernamesResource);
@@ -150,6 +158,10 @@ public class UserService {
         }
     }
 
+    /**
+     * 
+     * @return boolean
+     */
     public boolean deleteAllUsers(){
         try {
             userRepo.deleteAll();
@@ -162,6 +174,12 @@ public class UserService {
         }
     }
 
+    /**
+     * 
+     * @param page
+     * @param size
+     * @return Page<UserProjection> || Page.empty() || ?null
+     */
     public Page<UserProjection> getUserProjectionsByPageAndSize(Integer page, Integer size) {
         if (page == null || 
             size == null || 
@@ -176,26 +194,36 @@ public class UserService {
         if (projections.isEmpty()){
             log.warn("No users found");
         }
-        else {
-            log.info("Users found");
-        }
         return projections;
     }
 
+    /**
+     * 
+     * @param username
+     * @return boolean || null
+     */
     public boolean getExistsByUsername(String username) {
         return userRepo.existsByUserName(username);
     }
 
+    /**
+     * 
+     * @param username
+     * @return UserProjection || null
+     */
     public UserProjection getUserProjectionByName(String username) {
         Optional<UserProjection> optionalUserProjection = userRepo.findUserProjectionByUserName(username);
         if (optionalUserProjection.isPresent()){
-            log.info("User with name: {} exists", username);
             return optionalUserProjection.get();
         }
-        log.warn("User with name: {} doesn't exist", username);
         return null;
     }
 
+    /**
+     * @param page
+     * @param size
+     * @return Page<String> || null
+     */
     public Page<String> getUserNamesByPageAndSize(Integer page, Integer size) {
         if (page == null || size == null || page < 0 || size < 1) {
             return Page.empty();
@@ -223,7 +251,7 @@ public class UserService {
      * @param username
      * @param page
      * @param size
-     * @return
+     * @return WheelSpinResult || null || throws Unchecked (which will be caught by @Transactional)
      */
     public WheelSpinResult spinWheel(String username, Integer page, Integer size) {
         // we dont have all this on the controller because 
