@@ -246,6 +246,18 @@ public class UserService {
         }
         return null;
     }
+
+    @Transactional
+    public User spinWheelTransaction(User winnerUser, User currentUser){
+        winnerUser.setDead(true);
+        updateUser(winnerUser); // update user on db
+
+        currentUser.setAwCrudsPerformed(currentUser.getAwCrudsPerformed() + 1);
+        updateUser(currentUser);
+
+        return winnerUser;
+    }
+    
     /**
      *  Spin the wheel and return the name of the user that was "dead" or null
      * @param model
@@ -254,10 +266,8 @@ public class UserService {
      * @param size
      * @return WheelSpinResult || null || throws Unchecked (which will be caught by @Transactional)
      */
-    @Transactional
     public WheelSpinResult spinWheel(String username, Integer page, Integer size) {
         try {
-            
             if (getDeadByName(username)){
                 throw new Exception(String.format("User '%s' is dead", username));
             }
@@ -285,24 +295,17 @@ public class UserService {
                 throw new Exception(String.format("User '%s' not found", winnerName));
             }
             
-            winnerUser.setDead(true);
-            winnerUser = updateUser(winnerUser); // update user on db
-
-            currentUser.setAwCrudsPerformed(currentUser.getAwCrudsPerformed() + 1);
-            updateUser(currentUser);
+            winnerUser = spinWheelTransaction(winnerUser, currentUser);
 
             return WheelSpinResult
                 .builder()
                 .winnerName(winnerUser.getUserName())
                 .participants(participants)
                 .build();
-            
         } catch (Exception e) {
             log.warn(e.getMessage());
             //e.printStackTrace();
             return null;
         }
-
-        
     }
 }
