@@ -15,8 +15,13 @@
                     You have been logged out.
                 </h3>
                 <div class="container flex-column flex-align-center">
-                    <h3><a th:href="@{/auth/login}">Login</a></h3>
-                    <h3><a th:href="@{/auth/register}">Register</a></h3>
+                    <form th:action="@{/auth/login}" method="get">
+                        <button type="submit">Login</button>
+                    </form>
+
+                    <form th:action="@{/auth/register}" method="get">
+                        <button type="submit">Register</button>
+                    </form>
                 </div>
             </main>
         </div>
