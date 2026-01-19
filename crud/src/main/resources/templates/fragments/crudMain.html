@@ -1,50 +1,64 @@
 <th:block th:fragment="crud-main" th:if="${currentUser_userProjectionImpl != null}">
-    <div th:if="${currentUser_userProjectionImpl}" id="user-display" 
-            th:replace="~{fragments/userDisplay :: user-display(${currentUser_userProjectionImpl})}"></div>
+    <!-- <th:block th:if="${currentUser_userProjectionImpl}" 
+            th:insert="~{fragments/userDisplay :: user-display(${currentUser_userProjectionImpl})}"></th:block> -->
+    
+    <section class="container flex-column flex-align-center">
+        <h1 class="italic">The Rules of the Wheel</h1>
+        <hr class="dotted"></hr>
+        <h3 style="color: var(--primary-color);">Hello there!</h3>
+        <div>Request a page of users and spin the wheel, my friend!</div>
+        <div>Beware! Your name will also be added to the wheel!</div>
+        <div>Your chance of "winning" is displayed thusly...</div>
+        <hr class="dotted"></hr>
+        <h3>And remember, <span style="color: var(--primary-color);">Victory</span> means facing <span style="color: var(--tertiary-color);">deletion</span>!</h3>
+    </section>
 
-    <div th:replace="~{fragments/userWheel :: user-wheel(${wheel_participants}, ${wheel_winner})}"></div>
+    <div class="container flex-row flex-justify-center flex-align-center" style="gap: 4rem;">
+        <form class="flex-column flex-align-center" 
+              th:if="${currentUser_pageState != null}" id="request-page-form" method="post" 
+                th:action="@{/crud/requestPage}">
+            <label class="flex-column flex-align-center" for="pageNumber">Page:
+                <input id="pageNumber" type="number" name="pageNumber"
+                th:value="${currentUser_pageState.page}" required></label>
+            <label class="flex-column flex-align-center" for="pageSize">Size:
+                <input id="pageSize" type="number" name="pageSize"
+                th:value="${currentUser_pageState.size}" required></label>
+            <button type="submit">Request Page</button>
+        </form>
+        <form th:if="${requestPage_userProjections != null}" method="post" 
+                th:action="@{/crud/spinWheel}" id="spin-wheel-form">
+            <button class="btn-danger" type="submit">Spin</button>
+        </form>
+    </div>
 
-    <form th:if="${requestPage_userProjections != null}" method="post" 
-            th:action="@{/crud/spinWheel}" class="container" id="spin-wheel-form">
-        <button type="submit">Spin</button>
-    </form>
+    <th:block th:if="${requestPage_userProjections != null}" id="user-table" 
+              th:insert="~{fragments/userTable :: user-table(${requestPage_userProjections})}"></th:block>
 
-    <form th:if="${currentUser_pageState != null}" method="post" 
-            th:action="@{/crud/requestPage}" class="container" id="request-page-form">
-        <label for="pageNumber">Page: <input type="number" name="pageNumber" id="pageNumber" 
-            th:value="${currentUser_pageState.page}" required></label>
-        <label for="pageSize">Size: <input type="number" name="pageSize" id="pageSize" 
-            th:value="${currentUser_pageState.size}" required></label>
-        <button type="submit">Request Page</button>
-    </form>
-
-    <div th:if="${requestPage_userProjections != null}" id="user-table" 
-            th:insert="~{fragments/userTable :: user-table(${requestPage_userProjections})}"></div>
-
-    <form method="post" th:action="@{/crud/create}" class="container">
+    <form class="container flex-column flex-align-center" method="post" th:action="@{/crud/create}" >
         <label for="username">Username: <input type="text" name="username" id="username" required></label>
         <label for="password">Password: <input type="text" name="password" id="password" required></label>
         <button type="submit">Create</button>
-        <div th:switch="${param.registerUser != null ? param.registerUser[0] : ''}">
-            <div th:case="'true'" class="color-cyan">User registration succeeded for: 
+        <div th:if="${param.registerUser != null} and ${param.registerUser[0] != null}" 
+             th:switch="${param.registerUser[0]}">
+            <div th:case="true" style="color: --primary-color;">User registration succeeded for: 
                 <span th:text="${param.registerUserUsername}"></span></div>
-            <div th:case="'false'" class="color-crimson">User registration failed for: 
+            <div th:case="false" style="color: --terniary-color;">User registration failed for: 
                 <span th:text="${param.registerUserUsername}"></span></div>
         </div>
     </form>
 
-    <div class="container debug-buttons">
+    <div class="container flex-column flex-align-center debug-buttons">
         <form method="post" th:action="@{/crud/create-test-users}" >
             <button type="submit">DEBUG: Create Test Users</button>
         </form>
 
         <form method="post" th:action="@{/crud/delete-test-users}">
-            <button type="submit" 
+            <button class="btn-danger" type="submit" 
             onclick="return confirm('Are you sure you want to delete all test users?')">DEBUG: Delete Test Users</button>
         </form>
 
         <form method="post" th:action="@{/crud/delete-all-users}">
-            <button type="submit" 
+            <button class="btn-danger" type="submit" 
             onclick="return confirm('Are you sure you want to delete ALL users? This cannot be undone!')">DEBUG: Delete ALL Users</button>
         </form>
     </div>

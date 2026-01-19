@@ -7,23 +7,24 @@
     </head>
     <body>
         <div id="content">
-            <div id="header" class="container">
+            <header class="container">
                 <h1>Aw CRUD...</h1>
-            </div>
-            <div id="main" class="container">
-                <h2>Login</h2>
-                <div th:if="${param.error}" class="color-crimson">
-                    Invalid username and/or password!
+            </header>
+            <main class="flex-column">
+                <div class="container flex-column flex-align-center">
+                    <h2>Login</h2>
+                    
+                    <form class="flex-column flex-align-center" method="post" th:action="@{/auth/login}">
+                        <div><label for="username">Username: <input type="text" name="username" id="username" autocomplete="username" required/></label></div>
+                        <div><label for="password">Password: <input type="password" name="password" id="password" autocomplete="current-password" required/></label></div>
+                        <h3 th:if="${param.error}" style="color: var(--tertiary-color)">
+                            Invalid username or password!
+                        </h3>
+                        <div><button type="submit"/>Login</button></div>
+                    </form>
                 </div>
-                <div th:if="${param.logout}">
-                    You have been logged out.
-                </div>
-                <form method="post" th:action="@{/auth/login}">
-                    <div><label for="username">Username: <input type="text" name="username" id="username" autocomplete="username" required/></label></div>
-                    <div><label for="password">Password: <input type="password" name="password" id="password" autocomplete="current-password" required/></label></div>
-                    <div><input type="submit" value="Login"/></div>
-                </form>
-            </div>
+            </main>
         </div>
+        <script th:src="@{/js/main.js}"></script>
     </body>
 </html>

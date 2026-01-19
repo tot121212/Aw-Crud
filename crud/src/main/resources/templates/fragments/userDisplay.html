@@ -1,22 +1,21 @@
-<div th:fragment="user-display(user)"
-class="user-display container">
-    <div th:if="${user}">
-        <h2>Current User</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Username</th>
-                    <th>Aw CRUDs Performed</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td th:text="${user.id}"></td>
-                    <td th:text="${user.userName}"></td>
-                    <td th:text="${user.awCrudsPerformed}"></td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+<div th:fragment="user-display(user)" 
+class="user-display container flex-column flex-align-center" 
+th:if="${user}">
+    <h2>Current User</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Username</th>
+                <th>Aw CRUDs Performed</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td th:text="${user.id}"></td>
+                <td th:text="${user.userName}"></td>
+                <td th:text="${user.awCrudsPerformed}"></td>
+            </tr>
+        </tbody>
+    </table>
 </div>

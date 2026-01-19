@@ -7,15 +7,19 @@
     </head>
     <body>
         <div id="content">
-            <div id="header" class="container">
+            <header class="container">
                 <h1>Aw CRUD...</h1>
-            </div>
-            <div id="main" class="container">
-                <div>
-                    <div>Please log in <a th:href="@{/auth/login}">here</a></div>
-                    <div>Or register <a th:href="@{/auth/register}">here</a></div>
+            </header>
+            <main class="flex-column">
+                <h3 th:if="${param.logout}" class="container flex-column flex-align-center" style="color: var(--primary-color)">
+                    You have been logged out.
+                </h3>
+                <div class="container flex-column flex-align-center">
+                    <h3><a th:href="@{/auth/login}">Login</a></h3>
+                    <h3><a th:href="@{/auth/register}">Register</a></h3>
                 </div>
-            </div>
+            </main>
         </div>
+        <script th:src="@{/js/main.js}"></script>
     </body>
 </html>

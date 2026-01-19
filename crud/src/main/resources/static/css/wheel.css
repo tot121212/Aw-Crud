@@ -1,16 +1,25 @@
-:where(.user-wheel) {
+.user-wheel-container {
+    flex: 1 1 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow: hidden;
+}
+
+.wheel-and-needle {
+    position: relative;
+    width: 100%;
+}
+
+.user-wheel {
+    position: absolute;
     all: unset;
     aspect-ratio: 1 / 1;
-    background: crimson;
     container-type: inline-size;
     direction: ltr;
     display: grid;
     place-content: center start;
     clip-path: inset(0 0 0 0 round 50%);
-}
-
-.wheel-and-needle {
-    position: relative;
 }
 
 .needle {
@@ -20,46 +29,54 @@
     transform: translate(-50%, -50%);
     z-index: 1;
     width: 20px;
-    height: 20px;
-    display: flex;
 }
 
 .needle * {
     width: 100%;
 }
 
-:where(.user-wheel) li {
+.user-wheel li {
     align-content: center;
     display: grid;
-    font-size: 5cqi;
     color: black;
     grid-area: 1 / -1;
     list-style: none;
     transform-origin: center right;
-    width: 50cqi;
+    width: round(50cqi, 1px);
+    max-height: calc(2 * 3.1416 * 50% / var(--items));
     aspect-ratio: 1/calc(2*tan(180deg/var(--_items)));
 
-    --_rotate: calc(360deg / var(--_items) * calc(var(--_idx)));
-    rotate: var(--_rotate);
+    rotate: calc(360deg / var(--_items) * calc(var(--_idx)));
     background: hsl(calc(360deg / var(--_items) * calc(var(--_idx))), 100%, 75%);
-    clip-path: polygon(0% 0%, 100% 50%, 0% 100%);
+    clip-path: polygon(100% 50%, 0% 0%, 0% 100%);
 }
 
-
-:where(.user-wheel) li span {
+.user-wheel li span {
     display: grid;
-    width: calc(48cqi);
+    
+    width: 100%;
     height: 100%;
+
     transform-origin: center;
+
     place-items: center left;
+    box-sizing: border-box;
+    white-space: nowrap;
+
+    /* Dynamic font sizing based on number of items */
+    /* For 1-20 items: 50%, decreases to ~8% for 100 items */
+    font-size: calc(75% * max(0.1, min(1, 20 / var(--_items))));
+
+    padding-top: 2px;
+    padding-bottom: 2px;
 }
 
-:where(.user-wheel) li:not(.flip) span {
+.user-wheel li:not(.flip) span {
     place-items: center left;
     padding-left: 1rem;
 }
 
-:where(.user-wheel) li.flip span {
+.user-wheel li.flip span {
     transform: rotate(180deg);
     place-items: center right;
     padding-right: 1rem;

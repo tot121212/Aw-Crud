@@ -5,23 +5,24 @@ document.addEventListener('DOMContentLoaded', () => {
         
         const winner = wheel.getAttribute("data-winner");
         if (typeof winner === "string") {
-            spinWheel(wheel, winner);
+            spinWheel(wheelContainer, wheel, winner);
         }
     });
 });
 
 /**
  * Spins the wheel to land on the winner element
+ * @param {Element} wheelContainer
  * @param {Element} wheelElement
  * @param {string} winner
  * @param {number} fullRotations - Number of full rotations before stopping (default: 3)
  */
-function spinWheel(wheelElement, winner, fullRotations = 3) {
+function spinWheel(wheelContainer, wheelElement, winner, fullRotations = 4) {
     // Find the winner's index
-    const items = wheelElement.querySelectorAll('li');
+    const liElements = wheelElement.querySelectorAll('li');
     let winnerIndex = -1;
     
-    items.forEach((item, index) => {
+    liElements.forEach((item, index) => {
         const span = item.querySelector('span');
         if (span && span.textContent.trim() === winner.trim()) {
             winnerIndex = index;
@@ -34,7 +35,7 @@ function spinWheel(wheelElement, winner, fullRotations = 3) {
     }
 
     // Calculate total items
-    const totalItems = items.length;
+    const totalItems = liElements.length;
     
     // Calculate the rotation to bring the winner to the top (0 degrees)
     // Each item is positioned at: (index * 360 / totalItems) degrees
@@ -71,7 +72,7 @@ function spinWheel(wheelElement, winner, fullRotations = 3) {
             const wheelRotation = Math.atan2(b, a) * (180 / Math.PI);
             
             // Calculate which items should be flipped based on true rotation
-            items.forEach((item, index) => {
+            liElements.forEach((item, index) => {
                 // Calculate the slice's own rotation based on its index
                 const sliceRotation = (index * 360) / totalItems;
                 
@@ -101,17 +102,22 @@ function spinWheel(wheelElement, winner, fullRotations = 3) {
         }
     };
     
+    // query for all elements besides wheel in #content
+    const contentElementsNotWheel = document.querySelectorAll("main > *:not(.user-wheel-container)");
+    contentElementsNotWheel.forEach(element => {element.classList.add('hide');});
     updateFlips();
 
-animation.addEventListener('finish', () => {
+    animation.addEventListener('finish', () => {
         // Add a new event listener to make the winner li blink
         const blinkDuration = 3000; // 3 seconds
-        const winnerLi = items[winnerIndex];
+        const winnerLi = liElements[winnerIndex];
         const textElement = winnerLi.querySelector("span");
         if (!textElement) return;
         textElement.classList.add('wheel-blink');
         setTimeout(() => {
             textElement.classList.remove('wheel-blink');
+            contentElementsNotWheel.forEach(element => {element.classList.remove('hide');});
+            wheelContainer.classList.add('hide');
         }, blinkDuration);
     });
 }
