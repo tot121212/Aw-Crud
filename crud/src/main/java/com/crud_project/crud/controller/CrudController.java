@@ -73,7 +73,8 @@ public class CrudController {
     ) {
         return "redirect:/crud" + 
         "?registerUser=" + authService.registerUser(username, password) + 
-        "&registerUserUsername=" + username;
+        "&registerUserUsername=" + username +
+        "#user-create-form";
     }
 
     @PostMapping("/requestPage")
@@ -90,7 +91,7 @@ public class CrudController {
                 .page(pageNumber)
                 .size(pageSize)
                 .build());
-        return "redirect:/crud" + "#request-page-form";
+        return "redirect:/crud" + "#user-table";
     }
 
     @PostMapping("/spinWheel")

@@ -135,7 +135,7 @@ hr.dotted {
     border-left: 0.5rem solid var(--primary-color);
 }
 
-.user-table, .user-display {
+#user-table, #user-display {
     overflow-x: auto;
 }
 

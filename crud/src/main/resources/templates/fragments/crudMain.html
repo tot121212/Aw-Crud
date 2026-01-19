@@ -31,19 +31,19 @@
         </form>
     </div>
 
-    <th:block th:if="${requestPage_userProjections != null}" id="user-table" 
+    <th:block th:if="${requestPage_userProjections != null}"
               th:insert="~{fragments/userTable :: user-table(${requestPage_userProjections})}"></th:block>
 
-    <form class="container flex-column flex-align-center" method="post" th:action="@{/crud/create}" >
+    <form id="user-create-form" class="container flex-column flex-align-center" method="post" th:action="@{/crud/create}">
         <label for="username">Username: <input type="text" name="username" id="username" required></label>
         <label for="password">Password: <input type="text" name="password" id="password" required></label>
         <button type="submit">Create</button>
         <div th:if="${param.registerUser != null} and ${param.registerUser[0] != null}" 
              th:switch="${param.registerUser[0]}">
-            <div th:case="true" style="color: --primary-color;">User registration succeeded for: 
-                <span th:text="${param.registerUserUsername}"></span></div>
-            <div th:case="false" style="color: --terniary-color;">User registration failed for: 
-                <span th:text="${param.registerUserUsername}"></span></div>
+            <h3 th:case="'true'" style="color: var(--primary-color);">User registration succeeded for: 
+                <div th:text="${param.registerUserUsername}"></div></h3>
+            <h3 th:case="'false'" style="color: var(--tertiary-color);">User registration failed for: 
+                <span th:text="${param.registerUserUsername}"></span></h3>
         </div>
     </form>
 
