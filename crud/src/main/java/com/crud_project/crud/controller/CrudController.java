@@ -11,7 +11,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.crud_project.crud.entity.PageState;
 import com.crud_project.crud.entity.WheelSpinResult;
-import com.crud_project.crud.service.AuthService;
 import com.crud_project.crud.service.UserService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,7 +24,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class CrudController {
     private final UserService userService;
-    private final AuthService authService;
     
 
     @GetMapping("") //"/crud"
@@ -60,7 +58,7 @@ public class CrudController {
     @PostMapping("/delete-all-users")
     public String deleteAllUsersPost(HttpServletRequest request) {
         userService.deleteAllUsers();
-        authService.logout(request);
+        userService.logout(request);
         return "redirect:/home";
     }
 
@@ -72,7 +70,7 @@ public class CrudController {
         @RequestParam String password
     ) {
         return "redirect:/crud" + 
-        "?registerUser=" + authService.registerUser(username, password) + 
+        "?registerUser=" + userService.registerUser(username, password) + 
         "&registerUserUsername=" + username +
         "#user-create-form";
     }

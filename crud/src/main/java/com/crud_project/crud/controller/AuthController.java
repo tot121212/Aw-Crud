@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.crud_project.crud.service.AuthService;
+import com.crud_project.crud.service.UserService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -22,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class AuthController {
     // private final UserService userService;
-    private final AuthService authService;
+    private final UserService userService;
     private static final Map<String, String> UriToTemplateNameMap = Map.of(
         "/auth/login", "login",
         "/auth/register", "register",
@@ -56,7 +56,7 @@ public class AuthController {
     @PostMapping("/register")
     public String registerPost(@RequestParam String username, @RequestParam String password) {
         // check if username already exists
-        if (!authService.registerUser(username, password)) {
+        if (!userService.registerUser(username, password)) {
             return "redirect:/auth/register?error";
         }
         return "redirect:/auth/login";
@@ -64,7 +64,7 @@ public class AuthController {
 
     @PostMapping("/logout")
     public String logoutPost(HttpServletRequest request) {
-        authService.logout(request);
+        userService.logout(request);
         return "redirect:/home?logout";
     }
 }

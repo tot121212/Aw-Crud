@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StreamUtils;
@@ -22,6 +23,7 @@ import com.crud_project.crud.entity.WheelSpinResult;
 import com.crud_project.crud.repository.UserProjection;
 import com.crud_project.crud.repository.UserRepo;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -106,77 +108,6 @@ public class UserService {
 
     /**
      * 
-     * @return boolean
-     */
-    @Transactional
-    public boolean createTestUsers(){
-        try {
-            List<String> usernames = getResourceAsListOfStr(dbUsernamesResource);
-            log.warn("DEBUG: usernames: {}", usernames);
-            Collections.shuffle(usernames);
-
-            String password = readResourceFile(dbPasswordResource);
-            String hashedPassword = passwordEncoder.encode(password);
-            
-            for (String username : usernames) {
-                User user = new User();
-                user.setUserName(username);
-                user.setHashedPassword(hashedPassword);
-                user.setAwCrudsPerformed(random.nextInt(0, 100));
-                createUser(user);
-            }
-            log.info("Created test users");
-            return true;
-            
-        } catch (Exception e) {
-            log.error("Error creating test users: {}", e.getMessage());
-            return false;
-        }
-    }
-
-    /**
-     * @return boolean
-     */
-    public boolean deleteTestUsers(){
-        try {
-            List<String> usernames = getResourceAsListOfStr(dbUsernamesResource);
-            
-            for (String username : usernames) {
-                User user = getUserByName(username.trim());
-                if (user != null) {
-                    deleteUserById(user.getId());
-                }
-                else {
-                    throw new Exception(String.format("User '%s' not found during deletion", username.trim()));
-                }
-            }
-            log.info("Deleted test users");
-            return true;
-
-        } catch (Exception e) {
-            log.error("Error deleting test users: {}", e.getMessage());
-            return false;
-        }
-    }
-
-    /**
-     * 
-     * @return boolean
-     */
-    public boolean deleteAllUsers(){
-        try {
-            userRepo.deleteAll();
-            log.info("Deleted all users");
-            return true;
-
-        } catch (Exception e) {
-            log.error("Error deleting all users: {}", e.getMessage());
-            return false;
-        }
-    }
-
-    /**
-     * 
      * @param page
      * @param size
      * @return Page<UserProjection> || Page.empty() || ?null
@@ -247,6 +178,109 @@ public class UserService {
         return null;
     }
 
+    /**
+     * 
+     * @return boolean
+     */
+    public boolean deleteAllUsers(){
+        try {
+            userRepo.deleteAll();
+            log.info("Deleted all users");
+            return true;
+
+        } catch (Exception e) {
+            log.error("Error deleting all users: {}", e.getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * 
+     * @param username
+     * @param password
+     * @return boolean
+     */
+    public boolean registerUser(String username, String password){
+        log.debug("Attempting to register user: {}", username);
+        if (getUserByName(username) != null) {
+            log.warn("User {} already exists", username);
+            return false;
+        }
+        // Hash password and save user
+        String hashedPassword = passwordEncoder.encode(password);
+        User user = new User();
+        user.setUserName(username);
+        user.setHashedPassword(hashedPassword);
+        User createdUser = createUser(user);
+        log.info("User created: {}", createdUser);
+        return true;
+    }
+
+    /**
+     * Logs user out from session
+     * @param request
+     */
+    public void logout(HttpServletRequest request){
+        log.info("Logging out user: {}", request.getRemoteUser());
+        SecurityContextHolder.clearContext();
+        request.getSession().invalidate();
+    }
+
+    /**
+     * 
+     * @return boolean
+     */
+    @Transactional
+    public boolean createTestUsers(){
+        try {
+            List<String> usernames = getResourceAsListOfStr(dbUsernamesResource);
+            log.warn("DEBUG: usernames: {}", usernames);
+            Collections.shuffle(usernames);
+
+            String password = readResourceFile(dbPasswordResource);
+            String hashedPassword = passwordEncoder.encode(password);
+            
+            for (String username : usernames) {
+                User user = new User();
+                user.setUserName(username);
+                user.setHashedPassword(hashedPassword);
+                user.setAwCrudsPerformed(random.nextInt(0, 100));
+                createUser(user);
+            }
+            log.info("Created test users");
+            return true;
+            
+        } catch (Exception e) {
+            log.error("Error creating test users: {}", e.getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * @return boolean
+     */
+    public boolean deleteTestUsers(){
+        try {
+            List<String> usernames = getResourceAsListOfStr(dbUsernamesResource);
+            
+            for (String username : usernames) {
+                User user = getUserByName(username.trim());
+                if (user != null) {
+                    deleteUserById(user.getId());
+                }
+                else {
+                    throw new Exception(String.format("User '%s' not found during deletion", username.trim()));
+                }
+            }
+            log.info("Deleted test users");
+            return true;
+
+        } catch (Exception e) {
+            log.error("Error deleting test users: {}", e.getMessage());
+            return false;
+        }
+    }
+    
     @Transactional
     public User spinWheelTransaction(User winnerUser, User currentUser){
         winnerUser.setDead(true);
