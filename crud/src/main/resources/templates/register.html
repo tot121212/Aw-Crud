@@ -14,8 +14,8 @@
                 <div class="container flex-column flex-align-center">
                     <h2>Register</h2>
                     <form class="flex-column flex-align-center" method="post" th:action="@{/auth/register}">
-                        <div><label for="username">Username: <input type="text" name="username" id="username" autocomplete="username" required/></label></div>
-                        <div><label for="password">Password: <input type="password" name="password" id="password" autocomplete="new-password" required/></label></div>
+                        <div><label for="username">Username: <input type="text" name="username" id="username" autocomplete="username" required minlength="3" maxlength="32" pattern="[a-zA-Z0-9_-]{3,32}"/></label></div>
+                        <div><label for="password">Password: <input type="password" name="password" id="password" autocomplete="new-password" required minlength="8" maxlength="128" pattern="[a-zA-Z0-9!@#$%^&*_-]{8,128}"/></label></div>
                         <h3 th:if="${param.error}" style="color: var(--tertiary-color);">
                             User already exists!
                         </h3>
