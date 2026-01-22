@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.crud_project.crud.controller.utils.PaginationValidation;
 import com.crud_project.crud.entity.PageState;
 import com.crud_project.crud.entity.WheelSpinResult;
 import com.crud_project.crud.service.UserService;
@@ -94,18 +95,23 @@ public class CrudController {
     @PostMapping("/requestPage")
     public String requestPagePost(
         HttpSession session, 
-        @RequestParam(defaultValue = "0", required = true) Integer pageNumber, 
-        @RequestParam(defaultValue = "10", required = true) Integer pageSize//, 
+        @RequestParam(defaultValue = "0") Integer pageNumber, 
+        @RequestParam(defaultValue = "10") Integer pageSize
         //@RequestParam(required = false) String filter,
         //@RequestParam(required = false) String sort
     ) {
-        session.setAttribute(
+        if (PaginationValidation.isValidPageNumber(pageNumber) &&
+            PaginationValidation.isValidPageSize(pageSize))
+        {
+            session.setAttribute(
             SessionKeys.CUR_USER_PAGE_STATE,
             PageState.builder()
                 .page(pageNumber)
                 .size(pageSize)
                 .build());
-        return "redirect:/crud" + "#user-table";
+            return "redirect:/crud" + "#user-table";
+        }
+        return "redirect:/crud" + "?userTableError" + "#request-page-form-container";
     }
 
     @PostMapping("/spinWheel")

@@ -167,6 +167,10 @@ tr:hover {
     margin-bottom: 20px;
 }
 
+.error{
+    color: var(--tertiary-color);
+}
+
 label {
     display: block;
     margin-bottom: 5px;

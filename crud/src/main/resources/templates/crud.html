@@ -15,7 +15,7 @@
                 <section class="flex-row flex-align-center">
                     <div th:switch="${currentUser_userProjectionImpl.isDead}">
                         <th:block th:case="true">
-                            Goodbye, <span style="color: var(--tertiary-color);" th:text="${currentUser_userProjectionImpl?.getUserName()}"></span>...
+                            Goodbye, <span class="error" th:text="${currentUser_userProjectionImpl?.getUserName()}"></span>...
                         </th:block>
                         <th:block th:case="false">
                             Hello, <span th:text="${currentUser_userProjectionImpl?.getUserName()}"></span>!

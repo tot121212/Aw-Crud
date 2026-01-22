@@ -24,7 +24,7 @@
                     <form class="flex-column flex-align-center" method="post" th:action="@{/auth/login}">
                         <div><label for="username">Username: <input type="text" name="username" id="username" autocomplete="username" required/></label></div>
                         <div><label for="password">Password: <input type="password" name="password" id="password" autocomplete="current-password" required/></label></div>
-                        <h3 th:if="${param.error}" style="color: var(--tertiary-color)">
+                        <h3 th:if="${param.error}" class="error">
                             Invalid username or password!
                         </h3>
                         <div><button type="submit"/>Login</button></div>

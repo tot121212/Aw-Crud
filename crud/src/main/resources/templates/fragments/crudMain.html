@@ -10,25 +10,28 @@
         <div>Beware! Your name will also be added to the wheel!</div>
         <div>Your chance of "winning" is displayed thusly...</div>
         <hr class="dotted"></hr>
-        <h3>And remember, <span style="color: var(--primary-color);">Victory</span> means facing <span style="color: var(--tertiary-color);">deletion</span>!</h3>
+        <h3>And remember, <span style="color: var(--primary-color);">Victory</span> means facing <span class="error">deletion</span>!</h3>
     </section>
 
-    <div class="container flex-row flex-justify-center flex-align-center" style="gap: 4rem;">
-        <form class="flex-column flex-align-center" 
-              th:if="${currentUser_pageState != null}" id="request-page-form" method="post" 
-                th:action="@{/crud/requestPage}">
-            <label class="flex-column flex-align-center" for="pageNumber">Page:
-                <input id="pageNumber" type="number" name="pageNumber"
-                th:value="${currentUser_pageState.page}" required></label>
-            <label class="flex-column flex-align-center" for="pageSize">Size:
-                <input id="pageSize" type="number" name="pageSize"
-                th:value="${currentUser_pageState.size}" required></label>
-            <button type="submit">Request Page</button>
-        </form>
-        <form th:if="${requestPage_userProjections != null}" method="post" 
-                th:action="@{/crud/spinWheel}" id="spin-wheel-form">
-            <button class="btn-danger" type="submit">Spin</button>
-        </form>
+    <div class="container flex-column flex-justify-center flex-align-center" id="request-page-form-container">
+        <h3 th:if="${param.userTableError}" class="error">Table request was not valid</h3>
+        <div class="flex-row flex-justify-center flex-align-center" style="gap: 4rem;">
+            <form class="flex-column flex-align-center" 
+                th:if="${currentUser_pageState != null}" id="request-page-form" method="post" 
+                    th:action="@{/crud/requestPage}">
+                <label class="flex-column flex-align-center" for="pageNumber">Page:
+                    <input id="pageNumber" type="number" name="pageNumber"
+                    th:value="${currentUser_pageState.page}" required min="0"></label>
+                <label class="flex-column flex-align-center" for="pageSize">Size:
+                    <input id="pageSize" type="number" name="pageSize"
+                    th:value="${currentUser_pageState.size}" required min="0" max="100"></label>
+                <button type="submit">Request Page</button>
+            </form>
+            <form th:if="${requestPage_userProjections != null}" method="post" 
+                    th:action="@{/crud/spinWheel}" id="spin-wheel-form">
+                <button class="btn-danger" type="submit">Spin</button>
+            </form>
+        </div>
     </div>
 
     <th:block th:if="${requestPage_userProjections != null}"
@@ -42,7 +45,7 @@
              th:switch="${param.registerUser[0]}">
             <h3 th:case="'true'" style="color: var(--primary-color);">User registration succeeded for: 
                 <div th:text="${param.registerUserUsername}"></div></h3>
-            <h3 th:case="'false'" style="color: var(--tertiary-color);">User registration failed for: 
+            <h3 th:case="'false'" class="error">User registration failed for: 
                 <span th:text="${param.registerUserUsername}"></span></h3>
         </div>
     </form> -->

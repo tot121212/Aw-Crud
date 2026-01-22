@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PageState implements Serializable{
+    public static final Integer MAX_SIZE = 100;
     @Builder.Default
     private Integer page = 0;
     @Builder.Default
