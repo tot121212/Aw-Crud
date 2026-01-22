@@ -21,8 +21,8 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class AuthController {
-    // private final UserService userService;
     private final UserService userService;
+
     private static final Map<String, String> UriToTemplateNameMap = Map.of(
         "/auth/login", "login",
         "/auth/register", "register",
@@ -30,18 +30,19 @@ public class AuthController {
         "/home", "home"
     );
 
+
     // This redirects anyone who is already authenticated to the /crud page
     public String authRedirect(HttpServletRequest request, Authentication authentication, HttpSession session){
         // if none provided default to home
         if (request == null) {
             log.info("No request provided, directing to /home");
-            return "home";
+            return "/home";
         }
         String requestedUri = request.getRequestURI();
         if (authentication != null && authentication.isAuthenticated() &&
             !authentication.getName().equals("anonymousUser")) {
-            log.info("User {} already authenticated, directing to /crud", authentication.getName());
-            return "crud";
+            log.info("User {} already authenticated, directing to " + "/crud", authentication.getName());
+            return "/crud";
         }
         String destination = UriToTemplateNameMap.get(requestedUri);
         log.info("User not authenticated, directing to {}", destination);
