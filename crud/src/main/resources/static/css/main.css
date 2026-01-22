@@ -44,12 +44,11 @@ body {
 header {
     position: sticky;
 
-    display: flex;
-    flex-direction: row;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
     gap: 1rem;
 
     align-items: center;
-    justify-content: center;
     
     top: 0px;
     left: 0px;
@@ -87,12 +86,16 @@ hr.dotted {
     font-style: italic;
 }
 
+.bold {
+    font-weight: bold;
+}
+
 .hide {
     display: none !important;
 }
 
-.left {
-    margin-right: auto; 
+.center {
+    justify-self: center;
 }
 
 .flex-column {
@@ -192,6 +195,10 @@ button, input[type="submit"] {
 
 button:hover, input[type="submit"]:hover {
     background: darkturquoise;
+}
+
+input:invalid {
+  outline: 2px solid red;
 }
 
 .debug-buttons {

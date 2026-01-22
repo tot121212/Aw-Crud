@@ -10,20 +10,22 @@
     <body th:with="currentUser_name=${session.currentUser_name}, currentUser_pageState=${session.currentUser_pageState}">
         <div id="content" th:if="${currentUser_userProjectionImpl != null}">
             <header class="container">
-                <h1 class="left" >Aw CRUD...</h1>
+                <section><h1>Aw CRUD...</h1></section>
+                <section></section>
+                <section class="flex-row flex-align-center">
+                    <div th:switch="${currentUser_userProjectionImpl.isDead}">
+                        <th:block th:case="true">
+                            Goodbye, <span style="color: var(--tertiary-color);" th:text="${currentUser_userProjectionImpl?.getUserName()}"></span>...
+                        </th:block>
+                        <th:block th:case="false">
+                            Hello, <span th:text="${currentUser_userProjectionImpl?.getUserName()}"></span>!
+                        </th:block>
+                    </div>
 
-                <div th:switch="${currentUser_userProjectionImpl.isDead}">
-                    <th:block th:case="true">
-                        Goodbye, <span style="color: var(--tertiary-color);" th:text="${currentUser_userProjectionImpl?.getUserName()}"></span>...
-                    </th:block>
-                    <th:block th:case="false">
-                        Hello, <span th:text="${currentUser_userProjectionImpl?.getUserName()}"></span>!
-                    </th:block>
-                </div>
-
-                <form method="post" th:action="@{/auth/logout}" id="logout-form">
-                    <button type="submit">Logout</button>
-                </form>
+                    <form method="post" th:action="@{/auth/logout}" id="logout-form">
+                        <button type="submit">Logout</button>
+                    </form>
+                </section>
             </header>
             <main class="flex-column" th:switch="${currentUser_userProjectionImpl.isDead}">
                 <th:block th:if="${wheel_participants != null and wheel_winner != null}" 

@@ -3,12 +3,19 @@
     <head>
         <meta charset="UTF-8">
         <title>Aw CRUD</title>
+        <link rel="stylesheet" type="text/css" th:href="@{/css/css-reset.css}">
         <link rel="stylesheet" type="text/css" th:href="@{/css/main.css}">
     </head>
     <body>
         <div id="content">
             <header class="container">
-                <h1>Aw CRUD...</h1>
+                <section>
+                    <form class="left" th:action="@{/home}" method="get"><button type="submit">Home</button></form>
+                </section>
+                <section>
+                    <h1 class="center">Aw CRUD...</h1>
+                </section>
+                <section></section>
             </header>
             <main class="flex-column">
                 <div class="container flex-column flex-align-center">
