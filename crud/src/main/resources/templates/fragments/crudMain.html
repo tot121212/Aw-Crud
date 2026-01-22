@@ -34,7 +34,7 @@
     <th:block th:if="${requestPage_userProjections != null}"
               th:insert="~{fragments/userTable :: user-table(${requestPage_userProjections})}"></th:block>
 
-    <form id="user-create-form" class="container flex-column flex-align-center" method="post" th:action="@{/crud/create}">
+    <!-- <form id="user-create-form" class="container flex-column flex-align-center" method="post" th:action="@{/crud/create}">
         <label for="username">Username: <input type="text" name="username" id="username" required></label>
         <label for="password">Password: <input type="text" name="password" id="password" required></label>
         <button type="submit">Create</button>
@@ -45,7 +45,7 @@
             <h3 th:case="'false'" style="color: var(--tertiary-color);">User registration failed for: 
                 <span th:text="${param.registerUserUsername}"></span></h3>
         </div>
-    </form>
+    </form> -->
 
     <div class="container flex-column flex-align-center debug-buttons">
         <form method="post" th:action="@{/crud/create-test-users}" >

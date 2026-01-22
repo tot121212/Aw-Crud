@@ -62,18 +62,34 @@ public class CrudController {
         return "redirect:/home";
     }
 
-    // TODO: add create, read, update, delete, and awCrud functionality
-    // Probably attach all this to the userTable
-    @PostMapping("/create")
-    public String createPost(
-        @RequestParam String username, 
-        @RequestParam String password
-    ) {
-        return "redirect:/crud" + 
-        "?registerUser=" + userService.registerUser(username, password) + 
-        "&registerUserUsername=" + username +
-        "#user-create-form";
-    }
+    // @PostMapping("/create")
+    // public String createPost(
+    //     @RequestParam String username, 
+    //     @RequestParam String password
+    // ) {
+    //     boolean isUsernameValid = StateValidationUtils.isValidUsername(username);
+    //     boolean isPasswordValid = StateValidationUtils.isValidPassword(password);
+    //     String registreeUsername = isUsernameValid ? username : null;
+    //     boolean isRegistered = false;
+    //     String fragment = "user-create-form";
+
+    //     if (isUsernameValid 
+    //         && isPasswordValid 
+    //         && (userService.registerUser(username, password) != null)){
+    //         isRegistered = true;
+    //     }
+
+    //     return "redirect:" + 
+    //     UriComponentsBuilder
+    //         .fromPath("/crud")
+    //         .queryParam("registerUser", isRegistered)
+    //         .queryParam("isUsernameValid", isUsernameValid)
+    //         .queryParam("isPasswordValid", isPasswordValid)
+    //         .queryParam("registerUserUsername", registreeUsername)
+    //         .fragment(fragment)
+    //         .build()
+    //         .toUriString();
+    // }
 
     @PostMapping("/requestPage")
     public String requestPagePost(
