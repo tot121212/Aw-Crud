@@ -195,16 +195,16 @@ public class UserService {
     }
 
     /**
-     * 
+     * Registers a new user
      * @param username
      * @param password
-     * @return boolean
+     * @return User or null
      */
-    public boolean registerUser(String username, String password){
+    public User registerUser(String username, String password){
         log.debug("Attempting to register user: {}", username);
         if (getUserByName(username) != null) {
             log.warn("User {} already exists", username);
-            return false;
+            return null;
         }
         // Hash password and save user
         String hashedPassword = passwordEncoder.encode(password);
@@ -213,7 +213,7 @@ public class UserService {
         user.setHashedPassword(hashedPassword);
         User createdUser = createUser(user);
         log.info("User created: {}", createdUser);
-        return true;
+        return createdUser;
     }
 
     /**

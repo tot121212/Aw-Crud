@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.crud_project.crud.controller.utils.StateValidationUtils;
 import com.crud_project.crud.service.UserService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -56,16 +57,18 @@ public class AuthController {
 
     @PostMapping("/register")
     public String registerPost(@RequestParam String username, @RequestParam String password) {
-        // check if username already exists
-        if (!userService.registerUser(username, password)) {
-            return "redirect:/auth/register?error";
+        if (StateValidationUtils.isValidUsername(username) 
+        && StateValidationUtils.isValidPassword(password) 
+        && (userService.registerUser(username, password) != null)) {
+            // log them into user and redirect to crud page
+            return "redirect:" + "/crud";
         }
-        return "redirect:/auth/login";
+        return "redirect:" + "/auth" + "/register" + "?error";
     }
 
     @PostMapping("/logout")
     public String logoutPost(HttpServletRequest request) {
         userService.logout(request);
-        return "redirect:/home?logout";
+        return "redirect:" + "/login" + "?logout";
     }
 }
