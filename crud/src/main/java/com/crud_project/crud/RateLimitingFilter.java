@@ -18,7 +18,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 @Component
 public class RateLimitingFilter implements Filter {
-    private static final int MAX_REQUESTS_PER_MIN = 50;
+    private static final int MAX_REQUESTS_PER_MIN = 100;
     private final Map<String, AtomicInteger> requestCounts = new ConcurrentHashMap<>();
 
     @Override
