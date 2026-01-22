@@ -3,11 +3,16 @@ package com.crud_project.crud;
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -20,6 +25,12 @@ import jakarta.servlet.http.HttpServletResponse;
 public class RateLimitingFilter implements Filter {
     private static final int MAX_REQUESTS_PER_MIN = 100;
     private final Map<String, AtomicInteger> requestCounts = new ConcurrentHashMap<>();
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+    
+    @PostConstruct
+    public void initScheduler() {
+        scheduler.scheduleAtFixedRate(() -> requestCounts.clear(), 0, 1, TimeUnit.MINUTES);
+    }
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException{
@@ -36,5 +47,10 @@ public class RateLimitingFilter implements Filter {
             return;
         }
         chain.doFilter(request, response);
+    }
+
+    @PreDestroy
+    public void shutdownScheduler(){
+        if (scheduler != null) scheduler.shutdown();
     }
 }
