@@ -73,7 +73,7 @@ public class UserService {
         return null;
     }
 
-    public User getUserById(Integer id) {
+    public User getUserById(int id) {
         Optional<User> optionalUser = userRepo.findById(id);
         if (optionalUser.isPresent()){
             return optionalUser.get();
@@ -97,7 +97,7 @@ public class UserService {
         return null;
     }
 
-    public void deleteUserById (Integer id) {
+    public void deleteUserById (int id) {
         userRepo.deleteById(id);
         if (getUserById(id) == null){
             log.info("User with id: {} was dead", id);
@@ -160,9 +160,7 @@ public class UserService {
      */
     public Boolean getDeadByName(String username) {
         Optional<Boolean> optionalIsDead = userRepo.findDeadByUserName(username);
-        if (optionalIsDead.isPresent()){
-            return optionalIsDead.get();
-        }
+        if (optionalIsDead.isPresent()) return optionalIsDead.get();
         return null;
     }
 
@@ -196,9 +194,11 @@ public class UserService {
         }
         // Hash password and save user
         String hashedPassword = passwordEncoder.encode(password);
-        User user = new User();
-        user.setUserName(username);
-        user.setHashedPassword(hashedPassword);
+        User user = 
+        User.builder()
+            .userName(username)
+            .hashedPassword(hashedPassword)
+            .build();
         User createdUser = createUser(user);
         log.info("User created: {}", createdUser);
         return createdUser;
@@ -214,6 +214,8 @@ public class UserService {
         request.getSession().invalidate();
     }
 
+    private static final int RNG_MIN_CRUDS = 0;
+    private static final int RNG_MAX_CRUDS = 100;
     /**
      * 
      * @return boolean
@@ -229,12 +231,15 @@ public class UserService {
             String hashedPassword = passwordEncoder.encode(password);
             
             for (String username : usernames) {
-                User user = new User();
-                user.setUserName(username);
-                user.setHashedPassword(hashedPassword);
-                user.setAwCrudsPerformed(random.nextInt(0, 100));
+                User user = 
+                User.builder()
+                    .userName(username)
+                    .hashedPassword(hashedPassword)
+                    .awCrudsPerformed(random.nextInt(RNG_MIN_CRUDS, RNG_MAX_CRUDS))
+                    .build();
                 createUser(user);
             }
+            
             log.info("Created test users");
             return true;
             

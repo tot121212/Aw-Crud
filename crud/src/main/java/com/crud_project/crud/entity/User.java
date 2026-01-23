@@ -8,15 +8,19 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Builder;
+import lombok.Builder.Default;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "users")
-@Data
-@NoArgsConstructor
+@Setter
+@Getter
 @AllArgsConstructor
-// Entity class that represent a table in relational db
+@NoArgsConstructor
+@Builder
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -30,9 +34,11 @@ public class User {
     private String hashedPassword;
 
     @Column(nullable = false)
+    @Default
     private int awCrudsPerformed = 0;
     
     @Column(nullable = false)
+    @Default
     private boolean dead = false;
 
     @Version
