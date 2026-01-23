@@ -29,5 +29,5 @@ public interface UserRepo extends JpaRepository<User, Integer> {
     @Query("SELECT u.userName FROM User u")
     Page<String> findAllUserNames(Pageable pageable);
 
-    boolean existsByUserName(String userName);
+    Optional<Boolean> existsByUserName(String userName);
 }

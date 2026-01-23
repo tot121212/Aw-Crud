@@ -123,11 +123,12 @@ public class UserService {
     /**
      * 
      * @param username
-     * @return boolean || null
-            return null;
+     * @return boolean
      */
-    public boolean getExistsByUsername(String username) {
-        return userRepo.existsByUserName(username);
+    public Boolean getExistsByUsername(String username) {
+        Optional<Boolean> optionalExists = userRepo.existsByUserName(username);
+        if (optionalExists.isPresent()) return optionalExists.get();
+        return null;
     }
 
     /**
