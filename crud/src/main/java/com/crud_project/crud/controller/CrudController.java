@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.crud_project.crud.controller.utils.PaginationValidation;
 import com.crud_project.crud.entity.PageState;
 import com.crud_project.crud.entity.WheelSpinResult;
 import com.crud_project.crud.service.UserService;
@@ -39,7 +38,7 @@ public class CrudController {
             userService.getUserProjectionByName(name));
         model.addAttribute(
             ModelKeys.REQ_PAGE_PROJECTIONS, 
-            userService.getUserProjectionsByPageAndSize(pageState.getPage(), pageState.getSize()));
+            userService.getUserProjectionsByPageState(pageState));
         return "crud";
     }
 
@@ -95,20 +94,20 @@ public class CrudController {
     @PostMapping("/requestPage")
     public String requestPagePost(
         HttpSession session, 
-        @RequestParam(defaultValue = "0") Integer pageNumber, 
-        @RequestParam(defaultValue = "10") Integer pageSize
-        //@RequestParam(required = false) String filter,
-        //@RequestParam(required = false) String sort
+        @RequestParam(defaultValue = "0") Integer page, 
+        @RequestParam(defaultValue = "10") Integer size
     ) {
-        if (PaginationValidation.isValidPageNumber(pageNumber) &&
-            PaginationValidation.isValidPageSize(pageSize))
+        if (!PageState.isValidPage(page) || 
+            !PageState.isValidSize(size))
         {
             session.setAttribute(
-            SessionKeys.CUR_USER_PAGE_STATE,
-            PageState.builder()
-                .page(pageNumber)
-                .size(pageSize)
-                .build());
+                SessionKeys.CUR_USER_PAGE_STATE, 
+                PageState
+                    .builder()
+                    .page(page)
+                    .size(size)
+                    .build()
+            );
             return "redirect:/crud" + "#user-table";
         }
         return "redirect:/crud" + "?userTableError" + "#request-page-form-container";
@@ -120,11 +119,7 @@ public class CrudController {
         @SessionAttribute(SessionKeys.CUR_USER_PAGE_STATE) PageState pageState, 
         RedirectAttributes redirectAttributes
     ) {
-        WheelSpinResult wheelSpinResult = userService.spinWheel(
-            name, 
-            pageState.getPage(), 
-            pageState.getSize()
-        );
+        WheelSpinResult wheelSpinResult = userService.spinWheel(name, pageState);
         redirectAttributes.addFlashAttribute(ModelKeys.WHEEL_WINNER, wheelSpinResult.getWinnerName());
         redirectAttributes.addFlashAttribute(ModelKeys.WHEEL_PARTICIPANTS, wheelSpinResult.getParticipants());
         return "redirect:/crud" + "#user-wheel";

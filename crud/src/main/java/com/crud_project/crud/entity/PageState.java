@@ -1,21 +1,29 @@
 package com.crud_project.crud.entity;
-import java.io.Serializable;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Builder.Default;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Data
-@Builder
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PageState implements Serializable{
-    public static final Integer MAX_SIZE = 100;
-    @Builder.Default
-    private Integer page = 0;
-    @Builder.Default
-    private Integer size = 10;
-    @Builder.Default
-    private String filter = null;
+@Builder
+public class PageState{
+    public static final int MIN_SIZE = 1;
+    public static final int MAX_SIZE = 100;
+    public static final int MIN_PAGE = 0;
+
+    @Default
+    private final int page = MIN_PAGE;
+    @Default
+    private final int size = 10;
+
+    public static boolean isValidPage(int page){
+        return page >= MIN_PAGE;
+    }
+    public static boolean isValidSize(int size){
+        return (size >= MIN_SIZE && size <= MAX_SIZE);
+    }
 }

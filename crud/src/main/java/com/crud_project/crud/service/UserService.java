@@ -18,6 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StreamUtils;
 
+import com.crud_project.crud.entity.PageState;
 import com.crud_project.crud.entity.User;
 import com.crud_project.crud.entity.WheelSpinResult;
 import com.crud_project.crud.repository.UserProjection;
@@ -110,22 +111,12 @@ public class UserService {
      * 
      * @param page
      * @param size
-     * @return Page<UserProjection> || Page.empty() || ?null
+     * @return Page<UserProjection> || ?null
      */
-    public Page<UserProjection> getUserProjectionsByPageAndSize(Integer page, Integer size) {
-        if (page == null || 
-            size == null || 
-            page < 0 || 
-            size < 2) {
-            return Page.empty();
-        }
-        if (size > 100) {
-            size = 100;
-        }
-        Page<UserProjection> projections = userRepo.findAllBy(PageRequest.of(page, size));
-        if (projections.isEmpty()){
-            log.warn("No users found");
-        }
+    public Page<UserProjection> getUserProjectionsByPageState(PageState pageState) {
+        if (pageState == null) return null;
+        Page<UserProjection> projections = userRepo.findAllBy(PageRequest.of(pageState.getPage(), pageState.getSize()));
+        if (projections.isEmpty()) return null;
         return projections;
     }
 
@@ -133,6 +124,7 @@ public class UserService {
      * 
      * @param username
      * @return boolean || null
+            return null;
      */
     public boolean getExistsByUsername(String username) {
         return userRepo.existsByUserName(username);
@@ -156,14 +148,9 @@ public class UserService {
      * @param size
      * @return Page<String> || null
      */
-    public Page<String> getUserNamesByPageAndSize(Integer page, Integer size) {
-        if (page == null || size == null || page < 0 || size < 1) {
-            return Page.empty();
-        }
-        if (size > 100) {
-            size = 100;
-        }
-        return userRepo.findAllUserNames(PageRequest.of(page, size));
+    public Page<String> getUserNamesByPageState(PageState pageState) {
+        if (pageState == null) return Page.empty();
+        return userRepo.findAllUserNames(PageRequest.of(pageState.getPage(), pageState.getSize()));
     }
 
     /**

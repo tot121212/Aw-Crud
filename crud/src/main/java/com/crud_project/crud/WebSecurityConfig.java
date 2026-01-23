@@ -30,7 +30,7 @@ public class WebSecurityConfig {
 
     private void setupInitialState(Authentication authentication, HttpSession session){
         session.setAttribute(SessionKeys.CUR_USER_NAME, authentication.getName());
-        session.setAttribute(SessionKeys.CUR_USER_PAGE_STATE, new PageState());
+        session.setAttribute(SessionKeys.CUR_USER_PAGE_STATE, PageState.builder().build());
     }
 
     @Bean
