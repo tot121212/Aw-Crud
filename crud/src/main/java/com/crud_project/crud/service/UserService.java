@@ -319,11 +319,7 @@ public class UserService {
             
             winnerUser = spinWheelTransaction(winnerUser, currentUser);
 
-            return WheelSpinResult
-                .builder()
-                .winnerName(winnerUser.getUserName())
-                .participants(participants)
-                .build();
+            return new WheelSpinResult(winnerUser.getUserName(), participants);
         } catch (Exception e) {
             log.warn(e.getMessage());
             //e.printStackTrace();
