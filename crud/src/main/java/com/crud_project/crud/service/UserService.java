@@ -288,7 +288,7 @@ public class UserService {
      * @param size
      * @return WheelSpinResult || null || throws Unchecked (which will be caught by @Transactional)
      */
-    public WheelSpinResult spinWheel(String username, Integer page, Integer size) {
+    public WheelSpinResult spinWheel(String username, PageState pageState) {
         try {
             if (getDeadByName(username)){
                 throw new Exception(String.format("User '%s' is dead", username));
@@ -299,7 +299,7 @@ public class UserService {
             }
 
             List<String> participants = 
-                getUserNamesByPageAndSize(page, size)
+                getUserNamesByPageState(pageState)
                 .stream()
                 .collect(Collectors.toList());
             if (participants.isEmpty()){
