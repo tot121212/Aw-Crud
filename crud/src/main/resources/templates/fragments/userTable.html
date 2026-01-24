@@ -4,14 +4,12 @@ id="user-table" class="container flex-column flex-align-center">
     <table>
         <thead>
             <tr>
-                <th>ID</th>
                 <th>Username</th>
                 <th>Aw CRUDs Performed</th>
             </tr>
         </thead>
         <tbody>
             <tr th:each="user : ${page?.content}">
-                <td th:text="${user.id}"></td>
                 <td th:text="${user.userName}"></td>
                 <td th:text="${user.awCrudsPerformed}"></td>
             </tr>

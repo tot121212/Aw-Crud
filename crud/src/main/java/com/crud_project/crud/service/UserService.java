@@ -194,11 +194,11 @@ public class UserService {
         }
         // Hash password and save user
         String hashedPassword = passwordEncoder.encode(password);
-        User user = 
-        User.builder()
-            .userName(username)
-            .hashedPassword(hashedPassword)
-            .build();
+
+        User user = new User();
+        user.setUserName(username);
+        user.setHashedPassword(hashedPassword);
+
         User createdUser = createUser(user);
         log.info("User created: {}", createdUser);
         return createdUser;
@@ -231,12 +231,12 @@ public class UserService {
             String hashedPassword = passwordEncoder.encode(password);
             
             for (String username : usernames) {
-                User user = 
-                User.builder()
-                    .userName(username)
-                    .hashedPassword(hashedPassword)
-                    .awCrudsPerformed(random.nextInt(RNG_MIN_CRUDS, RNG_MAX_CRUDS))
-                    .build();
+                
+                User user = new User();
+                user.setUserName(username);
+                user.setHashedPassword(hashedPassword);
+                user.setAwCrudsPerformed(random.nextInt(RNG_MIN_CRUDS, RNG_MAX_CRUDS));
+                
                 createUser(user);
             }
             
