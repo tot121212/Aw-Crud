@@ -7,6 +7,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,6 +18,8 @@ import lombok.Setter;
 @Setter
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -28,9 +32,11 @@ public class User {
     @Column(nullable = false)
     private String hashedPassword;
 
+    @Builder.Default
     @Column(nullable = false)
     private int awCrudsPerformed = 0;
     
+    @Builder.Default
     @Column(nullable = false)
     private boolean dead = false;
 
