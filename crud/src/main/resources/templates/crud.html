@@ -7,7 +7,7 @@
         <link rel="stylesheet" type="text/css" th:href="@{/css/main.css}">
         <link rel="stylesheet" type="text/css" th:href="@{/css/wheel.css}">
     </head>
-    <body th:with="currentUser_name=${session.currentUser_name}, currentUser_pageState=${session.currentUser_pageState}">
+    <body>
         <div id="content" th:if="${currentUser_userProjectionImpl != null}">
             <header class="container">
                 <section><h1>Aw CRUD...</h1></section>
