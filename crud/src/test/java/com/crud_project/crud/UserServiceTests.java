@@ -82,347 +82,372 @@ class UserServiceTests {
         randomField.set(userService, randomMock);
     }
 
-    @Test
-    void testGetAllUsers_WithUsers() {
-        List<User> users = Arrays.asList(
-            User.builder().id(1).userName("user1").hashedPassword("pass1").build(),
-            User.builder().id(2).userName("user2").hashedPassword("pass2").build()
-        );
+    @Nested
+    class GetAllUsersTests {
+        @Test
+        void testGetAllUsers_WithUsers() {
+            List<User> users = Arrays.asList(
+                User.builder().id(1).userName("user1").hashedPassword("pass1").build(),
+                User.builder().id(2).userName("user2").hashedPassword("pass2").build()
+            );
 
-        when(userRepo.findAll()).thenReturn(users);
+            when(userRepo.findAll()).thenReturn(users);
 
-        List<User> result = userService.getAllUsers();
+            List<User> result = userService.getAllUsers();
 
-        assertNotNull(result);
-        assertEquals(2, result.size());
-        assertEquals("user1", result.get(0).getUserName());
-        verify(userRepo, times(1)).findAll();
+            assertNotNull(result);
+            assertEquals(2, result.size());
+            assertEquals("user1", result.get(0).getUserName());
+            verify(userRepo, times(1)).findAll();
+        }
+
+        @Test
+        void testGetAllUsers_Empty() {
+            when(userRepo.findAll()).thenReturn(Collections.emptyList());
+
+            List<User> result = userService.getAllUsers();
+
+            assertNotNull(result);
+            assertTrue(result.isEmpty());
+            verify(userRepo, times(1)).findAll();
+        }
     }
 
-    @Test
-    void testGetAllUsers_Empty() {
-        when(userRepo.findAll()).thenReturn(Collections.emptyList());
+    @Nested
+    class GetUserByNameTests {
+        @Test
+        void testGetUserByName_UserExists() {
+            String username = "testUser";
+            User mockUser = User.builder().id(1).userName(username).hashedPassword("hash").build();
 
-        List<User> result = userService.getAllUsers();
+            when(userRepo.findByUserName(username)).thenReturn(Optional.of(mockUser));
 
-        assertNotNull(result);
-        assertTrue(result.isEmpty());
-        verify(userRepo, times(1)).findAll();
+            User result = userService.getUserByName(username);
+
+            assertNotNull(result);
+            assertEquals(username, result.getUserName());
+            assertEquals(1, result.getId());
+            verify(userRepo, times(1)).findByUserName(username);
+        }
+
+        @Test
+        void testGetUserByName_UserDoesNotExist() {
+            String username = "nonexistent";
+
+            when(userRepo.findByUserName(username)).thenReturn(Optional.empty());
+
+            User result = userService.getUserByName(username);
+
+            assertNull(result);
+            verify(userRepo, times(1)).findByUserName(username);
+        }
     }
 
-    // Test getUserByName
-    @Test
-    void testGetUserByName_UserExists() {
-        String username = "testUser";
-        User mockUser = User.builder().id(1).userName(username).hashedPassword("hash").build();
+    @Nested
+    class GetUserByIdTests {
+        @Test
+        void testGetUserById_UserExists() {
+            int id = 1;
+            String username = "User";
+            String hashedPassword = "hashedPassword";
+            User mockUser = 
+            User.builder()
+                .id(id)
+                .userName(username)
+                .hashedPassword(hashedPassword)
+                .build();
+            
+            when(userRepo.findById(id)).thenReturn(Optional.of(mockUser));
 
-        when(userRepo.findByUserName(username)).thenReturn(Optional.of(mockUser));
+            User result = userService.getUserById(id);
 
-        User result = userService.getUserByName(username);
+            assertNotNull(result);
+            assertEquals(id, result.getId());
+            assertEquals(username, result.getUserName());
+            assertEquals(hashedPassword, result.getHashedPassword());
+            verify(userRepo, times(1)).findById(id);
+        }
 
-        assertNotNull(result);
-        assertEquals(username, result.getUserName());
-        assertEquals(1, result.getId());
-        verify(userRepo, times(1)).findByUserName(username);
+        // @Test
+        // void testGetUserById_UserDoesNotExist() {
+        //     int id = 999;
+
+        //     when(userRepo.findById(id)).thenReturn(Optional.empty());
+
+        //     User result = userService.getUserById(id);
+
+        //     assertNull(result);
+        //     verify(userRepo, times(1)).findById(id);
+        // }
     }
 
-    @Test
-    void testGetUserByName_UserDoesNotExist() {
-        String username = "nonexistent";
+    @Nested
+    class CreateUserTests {
+        @Test
+        void testCreateUser_Success() {
+            User userToCreate = User.builder().userName("newUser").hashedPassword("hash").build();
+            User savedUser = User.builder().id(1).userName("newUser").hashedPassword("hash").build();
 
-        when(userRepo.findByUserName(username)).thenReturn(Optional.empty());
+            when(userRepo.save(userToCreate)).thenReturn(savedUser);
 
-        User result = userService.getUserByName(username);
+            User result = userService.createUser(userToCreate);
 
-        assertNull(result);
-        verify(userRepo, times(1)).findByUserName(username);
+            assertNotNull(result);
+            assertEquals(1, result.getId());
+            assertEquals("newUser", result.getUserName());
+            verify(userRepo, times(1)).save(userToCreate);
+        }
     }
 
-    // Test getUserById (existing test - enhanced)
-    @Test
-    void testGetUserById_UserExists() {
-        int id = 1;
-        String username = "User";
-        String hashedPassword = "hashedPassword";
-        User mockUser = 
-        User.builder()
-            .id(id)
-            .userName(username)
-            .hashedPassword(hashedPassword)
-            .build();
-        
-        when(userRepo.findById(id)).thenReturn(Optional.of(mockUser));
+    @Nested
+    class UpdateUserTests {
+        @Test
+        void testUpdateUser_UserExists() {
+            User existingUser = User.builder().id(1).userName("user").hashedPassword("oldHash").build();
+            User updatedUser = User.builder().id(1).userName("user").hashedPassword("newHash").build();
 
-        User result = userService.getUserById(id);
+            when(userRepo.findById(1)).thenReturn(Optional.of(existingUser));
+            when(userRepo.save(updatedUser)).thenReturn(updatedUser);
 
-        assertNotNull(result);
-        assertEquals(id, result.getId());
-        assertEquals(username, result.getUserName());
-        assertEquals(hashedPassword, result.getHashedPassword());
-        verify(userRepo, times(1)).findById(id);
+            User result = userService.updateUser(updatedUser);
+
+            assertNotNull(result);
+            assertEquals("newHash", result.getHashedPassword());
+            verify(userRepo, times(1)).findById(1);
+            verify(userRepo, times(1)).save(updatedUser);
+        }
+
+        @Test
+        void testUpdateUser_UserDoesNotExist() {
+            User nonExistentUser = User.builder().id(999).userName("user").hashedPassword("hash").build();
+
+            when(userRepo.findById(999)).thenReturn(Optional.empty());
+
+            User result = userService.updateUser(nonExistentUser);
+
+            assertNull(result);
+            verify(userRepo, times(1)).findById(999);
+            verify(userRepo, never()).save(any(User.class));
+        }
     }
 
-    // @Test
-    // void testGetUserById_UserDoesNotExist() {
-    //     int id = 999;
+    @Nested
+    class DeleteUserByIdTests {
+        @Test
+        void testDeleteUserById_Success() {
+            int id = 1;
+            User.builder().id(id).userName("user").hashedPassword("hash").build();
 
-    //     when(userRepo.findById(id)).thenReturn(Optional.empty());
+            doNothing().when(userRepo).deleteById(id);
+            when(userRepo.findById(id)).thenReturn(Optional.empty());
 
-    //     User result = userService.getUserById(id);
+            userService.deleteUserById(id);
 
-    //     assertNull(result);
-    //     verify(userRepo, times(1)).findById(id);
-    // }
+            verify(userRepo, times(1)).deleteById(id);
+            verify(userRepo, times(1)).findById(id);
+        }
 
-    // Test createUser
-    @Test
-    void testCreateUser_Success() {
-        User userToCreate = User.builder().userName("newUser").hashedPassword("hash").build();
-        User savedUser = User.builder().id(1).userName("newUser").hashedPassword("hash").build();
+        @Test
+        void testDeleteUserById_UserStillExists() {
+            int id = 1;
+            User user = User.builder().id(id).userName("user").hashedPassword("hash").build();
 
-        when(userRepo.save(userToCreate)).thenReturn(savedUser);
+            doNothing().when(userRepo).deleteById(id);
+            when(userRepo.findById(id)).thenReturn(Optional.of(user));
 
-        User result = userService.createUser(userToCreate);
+            userService.deleteUserById(id);
 
-        assertNotNull(result);
-        assertEquals(1, result.getId());
-        assertEquals("newUser", result.getUserName());
-        verify(userRepo, times(1)).save(userToCreate);
+            verify(userRepo, times(1)).deleteById(id);
+            verify(userRepo, times(1)).findById(id);
+        }
     }
 
-    // Test updateUser
-    @Test
-    void testUpdateUser_UserExists() {
-        User existingUser = User.builder().id(1).userName("user").hashedPassword("oldHash").build();
-        User updatedUser = User.builder().id(1).userName("user").hashedPassword("newHash").build();
+    @Nested
+    class GetUserProjectionsByPageStateTests {
+        @Test
+        void testGetUserProjectionsByPageState_Success() {
+            PageState pageState = PageState.builder().build();
+            List<UserProjection> projections = Arrays.asList(
+                userProjection
+            );
+            Page<UserProjection> page = new PageImpl<>(projections);
 
-        when(userRepo.findById(1)).thenReturn(Optional.of(existingUser));
-        when(userRepo.save(updatedUser)).thenReturn(updatedUser);
+            when(userRepo.findAllBy(PageRequest.of(0, 10))).thenReturn(page);
 
-        User result = userService.updateUser(updatedUser);
+            Page<UserProjection> result = userService.getUserProjectionsByPageState(pageState);
 
-        assertNotNull(result);
-        assertEquals("newHash", result.getHashedPassword());
-        verify(userRepo, times(1)).findById(1);
-        verify(userRepo, times(1)).save(updatedUser);
+            assertNotNull(result);
+            assertEquals(1, result.getTotalElements());
+            verify(userRepo, times(1)).findAllBy(PageRequest.of(0, 10));
+        }
+
+        @Test
+        void testGetUserProjectionsByPageState_NullPageState() {
+            Page<UserProjection> result = userService.getUserProjectionsByPageState(null);
+
+            assertNull(result);
+            verify(userRepo, never()).findAllBy(any());
+        }
+
+        @Test
+        void testGetUserProjectionsByPageState_EmptyPage() {
+            PageState pageState = PageState.builder().build();
+            Page<UserProjection> emptyPage = Page.empty();
+
+            when(userRepo.findAllBy(PageRequest.of(0, 10))).thenReturn(emptyPage);
+
+            Page<UserProjection> result = userService.getUserProjectionsByPageState(pageState);
+
+            assertNull(result);
+            verify(userRepo, times(1)).findAllBy(PageRequest.of(0, 10));
+        }
     }
 
-    @Test
-    void testUpdateUser_UserDoesNotExist() {
-        User nonExistentUser = User.builder().id(999).userName("user").hashedPassword("hash").build();
+    @Nested
+    class GetExistsByUsernameTests {
+        @Test
+        void testGetExistsByUsername_Exists() {
+            String username = "existingUser";
 
-        when(userRepo.findById(999)).thenReturn(Optional.empty());
+            when(userRepo.existsByUserName(username)).thenReturn(Optional.of((Boolean) true));
 
-        User result = userService.updateUser(nonExistentUser);
+            boolean result = userService.getExistsByUsername(username);
 
-        assertNull(result);
-        verify(userRepo, times(1)).findById(999);
-        verify(userRepo, never()).save(any(User.class));
+            assertTrue(result);
+            verify(userRepo, times(1)).existsByUserName(username);
+        }
+
+        @Test
+        void testGetExistsByUsername_DoesNotExist() {
+            String username = "nonexistent";
+
+            when(userRepo.existsByUserName(username)).thenReturn(Optional.of((Boolean) false));
+
+            boolean result = userService.getExistsByUsername(username);
+
+            assertFalse(result);
+            verify(userRepo, times(1)).existsByUserName(username);
+        }
     }
 
-    // Test deleteUserById
-    @Test
-    void testDeleteUserById_Success() {
-        int id = 1;
-        User.builder().id(id).userName("user").hashedPassword("hash").build();
+    @Nested
+    class GetUserProjectionByNameTests {
+        @Test
+        void testGetUserProjectionByName_UserExists() {
+            String username = "testUser";
 
-        doNothing().when(userRepo).deleteById(id);
-        when(userRepo.findById(id)).thenReturn(Optional.empty());
+            when(userRepo.findUserProjectionByUserName(username)).thenReturn(Optional.of(userProjection));
 
-        userService.deleteUserById(id);
+            UserProjection result = userService.getUserProjectionByName(username);
 
-        verify(userRepo, times(1)).deleteById(id);
-        verify(userRepo, times(1)).findById(id);
+            assertNotNull(result);
+            assertEquals(userProjection, result);
+            verify(userRepo, times(1)).findUserProjectionByUserName(username);
+        }
+
+        @Test
+        void testGetUserProjectionByName_UserDoesNotExist() {
+            String username = "nonexistent";
+
+            when(userRepo.findUserProjectionByUserName(username)).thenReturn(Optional.empty());
+
+            UserProjection result = userService.getUserProjectionByName(username);
+
+            assertNull(result);
+            verify(userRepo, times(1)).findUserProjectionByUserName(username);
+        }
     }
 
-    @Test
-    void testDeleteUserById_UserStillExists() {
-        int id = 1;
-        User user = User.builder().id(id).userName("user").hashedPassword("hash").build();
+    @Nested
+    class GetUserNamesByPageStateTests {
+        @Test
+        void testGetUserNamesByPageState_Success() {
+            PageState pageState = PageState.builder().build();
+            List<String> usernames = Arrays.asList("user1", "user2", "user3");
+            Page<String> page = new PageImpl<>(usernames);
 
-        doNothing().when(userRepo).deleteById(id);
-        when(userRepo.findById(id)).thenReturn(Optional.of(user));
+            when(userRepo.findAllUserNames(PageRequest.of(0, 10))).thenReturn(page);
 
-        userService.deleteUserById(id);
+            Page<String> result = userService.getUserNamesByPageState(pageState);
 
-        verify(userRepo, times(1)).deleteById(id);
-        verify(userRepo, times(1)).findById(id);
+            assertNotNull(result);
+            assertEquals(3, result.getTotalElements());
+            assertEquals("user1", result.getContent().get(0));
+            verify(userRepo, times(1)).findAllUserNames(PageRequest.of(0, 10));
+        }
+
+        @Test
+        void testGetUserNamesByPageState_NullPageState() {
+            Page<String> result = userService.getUserNamesByPageState(null);
+
+            assertNotNull(result);
+            assertTrue(result.isEmpty());
+            verify(userRepo, never()).findAllUserNames(any());
+        }
     }
 
-    // Test getUserProjectionsByPageState
-    @Test
-    void testGetUserProjectionsByPageState_Success() {
-        PageState pageState = PageState.builder().build();
-        List<UserProjection> projections = Arrays.asList(
-            userProjection
-        );
-        Page<UserProjection> page = new PageImpl<>(projections);
+    @Nested
+    class GetDeadByNameTests {
+        @Test
+        void testGetDeadByName_UserIsDead() {
+            String username = "deadUser";
 
-        when(userRepo.findAllBy(PageRequest.of(0, 10))).thenReturn(page);
+            when(userRepo.findDeadByUserName(username)).thenReturn(Optional.of(true));
 
-        Page<UserProjection> result = userService.getUserProjectionsByPageState(pageState);
+            Boolean result = userService.getDeadByName(username);
 
-        assertNotNull(result);
-        assertEquals(1, result.getTotalElements());
-        verify(userRepo, times(1)).findAllBy(PageRequest.of(0, 10));
+            assertNotNull(result);
+            assertTrue(result);
+            verify(userRepo, times(1)).findDeadByUserName(username);
+        }
+
+        @Test
+        void testGetDeadByName_UserIsAlive() {
+            String username = "aliveUser";
+
+            when(userRepo.findDeadByUserName(username)).thenReturn(Optional.of(false));
+
+            Boolean result = userService.getDeadByName(username);
+
+            assertNotNull(result);
+            assertFalse(result);
+            verify(userRepo, times(1)).findDeadByUserName(username);
+        }
+
+        @Test
+        void testGetDeadByName_UserDoesNotExist() {
+            String username = "nonexistent";
+
+            when(userRepo.findDeadByUserName(username)).thenReturn(Optional.empty());
+
+            Boolean result = userService.getDeadByName(username);
+
+            assertNull(result);
+            verify(userRepo, times(1)).findDeadByUserName(username);
+        }
     }
 
-    @Test
-    void testGetUserProjectionsByPageState_NullPageState() {
-        Page<UserProjection> result = userService.getUserProjectionsByPageState(null);
+    @Nested
+    class DeleteAllUsersTests {
+        @Test
+        void testDeleteAllUsers_Success() {
+            doNothing().when(userRepo).deleteAll();
 
-        assertNull(result);
-        verify(userRepo, never()).findAllBy(any());
-    }
+            boolean result = userService.deleteAllUsers();
 
-    @Test
-    void testGetUserProjectionsByPageState_EmptyPage() {
-        PageState pageState = PageState.builder().build();
-        Page<UserProjection> emptyPage = Page.empty();
+            assertTrue(result);
+            verify(userRepo, times(1)).deleteAll();
+        }
 
-        when(userRepo.findAllBy(PageRequest.of(0, 10))).thenReturn(emptyPage);
+        @Test
+        void testDeleteAllUsers_Exception() {
+            doThrow(new RuntimeException("Database error")).when(userRepo).deleteAll();
 
-        Page<UserProjection> result = userService.getUserProjectionsByPageState(pageState);
+            boolean result = userService.deleteAllUsers();
 
-        assertNull(result);
-        verify(userRepo, times(1)).findAllBy(PageRequest.of(0, 10));
-    }
-
-    // Test getExistsByUsername
-    @Test
-    void testGetExistsByUsername_Exists() {
-        String username = "existingUser";
-
-        when(userRepo.existsByUserName(username)).thenReturn(Optional.of((Boolean) true));
-
-        boolean result = userService.getExistsByUsername(username);
-
-        assertTrue(result);
-        verify(userRepo, times(1)).existsByUserName(username);
-    }
-
-    @Test
-    void testGetExistsByUsername_DoesNotExist() {
-        String username = "nonexistent";
-
-        when(userRepo.existsByUserName(username)).thenReturn(Optional.of((Boolean) false));
-
-        boolean result = userService.getExistsByUsername(username);
-
-        assertFalse(result);
-        verify(userRepo, times(1)).existsByUserName(username);
-    }
-
-    // Test getUserProjectionByName
-    @Test
-    void testGetUserProjectionByName_UserExists() {
-        String username = "testUser";
-
-        when(userRepo.findUserProjectionByUserName(username)).thenReturn(Optional.of(userProjection));
-
-        UserProjection result = userService.getUserProjectionByName(username);
-
-        assertNotNull(result);
-        assertEquals(userProjection, result);
-        verify(userRepo, times(1)).findUserProjectionByUserName(username);
-    }
-
-    @Test
-    void testGetUserProjectionByName_UserDoesNotExist() {
-        String username = "nonexistent";
-
-        when(userRepo.findUserProjectionByUserName(username)).thenReturn(Optional.empty());
-
-        UserProjection result = userService.getUserProjectionByName(username);
-
-        assertNull(result);
-        verify(userRepo, times(1)).findUserProjectionByUserName(username);
-    }
-
-    // Test getUserNamesByPageState
-    @Test
-    void testGetUserNamesByPageState_Success() {
-        PageState pageState = PageState.builder().build();
-        List<String> usernames = Arrays.asList("user1", "user2", "user3");
-        Page<String> page = new PageImpl<>(usernames);
-
-        when(userRepo.findAllUserNames(PageRequest.of(0, 10))).thenReturn(page);
-
-        Page<String> result = userService.getUserNamesByPageState(pageState);
-
-        assertNotNull(result);
-        assertEquals(3, result.getTotalElements());
-        assertEquals("user1", result.getContent().get(0));
-        verify(userRepo, times(1)).findAllUserNames(PageRequest.of(0, 10));
-    }
-
-    @Test
-    void testGetUserNamesByPageState_NullPageState() {
-        Page<String> result = userService.getUserNamesByPageState(null);
-
-        assertNotNull(result);
-        assertTrue(result.isEmpty());
-        verify(userRepo, never()).findAllUserNames(any());
-    }
-
-    // Test getDeadByName
-    @Test
-    void testGetDeadByName_UserIsDead() {
-        String username = "deadUser";
-
-        when(userRepo.findDeadByUserName(username)).thenReturn(Optional.of(true));
-
-        Boolean result = userService.getDeadByName(username);
-
-        assertNotNull(result);
-        assertTrue(result);
-        verify(userRepo, times(1)).findDeadByUserName(username);
-    }
-
-    @Test
-    void testGetDeadByName_UserIsAlive() {
-        String username = "aliveUser";
-
-        when(userRepo.findDeadByUserName(username)).thenReturn(Optional.of(false));
-
-        Boolean result = userService.getDeadByName(username);
-
-        assertNotNull(result);
-        assertFalse(result);
-        verify(userRepo, times(1)).findDeadByUserName(username);
-    }
-
-    @Test
-    void testGetDeadByName_UserDoesNotExist() {
-        String username = "nonexistent";
-
-        when(userRepo.findDeadByUserName(username)).thenReturn(Optional.empty());
-
-        Boolean result = userService.getDeadByName(username);
-
-        assertNull(result);
-        verify(userRepo, times(1)).findDeadByUserName(username);
-    }
-
-    // Test deleteAllUsers
-    @Test
-    void testDeleteAllUsers_Success() {
-        doNothing().when(userRepo).deleteAll();
-
-        boolean result = userService.deleteAllUsers();
-
-        assertTrue(result);
-        verify(userRepo, times(1)).deleteAll();
-    }
-
-    @Test
-    void testDeleteAllUsers_Exception() {
-        doThrow(new RuntimeException("Database error")).when(userRepo).deleteAll();
-
-        boolean result = userService.deleteAllUsers();
-
-        assertFalse(result);
-        verify(userRepo, times(1)).deleteAll();
+            assertFalse(result);
+            verify(userRepo, times(1)).deleteAll();
+        }
     }
 
     @Nested
