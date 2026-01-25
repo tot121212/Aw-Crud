@@ -98,23 +98,24 @@ public class CrudController {
     @PostMapping("/requestPage")
     public String requestPagePost(
         HttpSession session, 
-        @RequestParam(defaultValue = "0") Integer page, 
-        @RequestParam(defaultValue = "10") Integer size
+        @RequestParam(defaultValue = "0") Integer pageNumber, 
+        @RequestParam(defaultValue = "10") Integer pageSize
     ) {
-        if (!PageState.isValidPage(page) || 
-            !PageState.isValidSize(size))
+        if (PageState.isValidPage(pageNumber) && 
+            PageState.isValidSize(pageSize))
         {
             session.setAttribute(
                 SessionKeys.CUR_USER_PAGE_STATE, 
                 PageState
                     .builder()
-                    .page(page)
-                    .size(size)
+                    .page(pageNumber)
+                    .size(pageSize)
                     .build()
             );
             return "redirect:/crud" + "#user-table";
         }
-        return "redirect:/crud" + "?userTableError" + "#request-page-form-container";
+
+        return "redirect:/crud" + "?userTableError=true" + "#request-page-form-container";
     }
 
     @PostMapping("/spinWheel")
