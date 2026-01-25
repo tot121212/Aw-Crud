@@ -1,6 +1,5 @@
 package com.crud_project.crud;
 
-import java.io.ByteArrayInputStream;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collections;
@@ -33,7 +32,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -45,6 +43,7 @@ import com.crud_project.crud.entity.User;
 import com.crud_project.crud.entity.WheelSpinResult;
 import com.crud_project.crud.repository.UserProjection;
 import com.crud_project.crud.repository.UserRepo;
+import com.crud_project.crud.service.ResourceHandler;
 import com.crud_project.crud.service.UserService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -63,6 +62,9 @@ class UserServiceTests {
 
     @Mock
     private UserProjection userProjection;
+
+    @Mock
+    private ResourceHandler resourceHandler;
 
     private Random randomMock;
 
@@ -666,12 +668,6 @@ class UserServiceTests {
 
     @Nested
     class CreateTestUsersTests {
-        @Mock
-        private Resource dbUsernamesResource;
-
-        @Mock
-        private Resource dbPasswordResource;
-
         private List<String> testUsernames;
         private String testPassword;
         private String hashedPassword;
@@ -682,21 +678,12 @@ class UserServiceTests {
             testPassword = "testpassword123";
             hashedPassword = "hashedTestPassword";
 
-            // Mock the resource file reading
-            lenient().when(dbUsernamesResource.getInputStream()).thenReturn(new ByteArrayInputStream("testuser1\ntestuser2\ntestuser3".getBytes()));
-            lenient().when(dbPasswordResource.getInputStream()).thenReturn(new ByteArrayInputStream(testPassword.getBytes()));
+            // Mock the resource handler
+            lenient().when(resourceHandler.getTestUserDbUsernames()).thenReturn(testUsernames);
+            lenient().when(resourceHandler.getTestUserDbPasswords()).thenReturn(Collections.singletonList(testPassword));
 
             // Mock password encoding
             lenient().when(passwordEncoder.encode(testPassword)).thenReturn(hashedPassword);
-
-            // Set the mock resources using reflection
-            Field dbUsernamesField = UserService.class.getDeclaredField("dbUsernamesResource");
-            dbUsernamesField.setAccessible(true);
-            dbUsernamesField.set(userService, dbUsernamesResource);
-
-            Field dbPasswordField = UserService.class.getDeclaredField("dbPasswordResource");
-            dbPasswordField.setAccessible(true);
-            dbPasswordField.set(userService, dbPasswordResource);
         }
 
         @Test
@@ -715,8 +702,8 @@ class UserServiceTests {
         }
 
         @Test
-        void testCreateTestUsers_Exception() throws Exception {
-            when(dbUsernamesResource.getInputStream()).thenThrow(new RuntimeException("File not found"));
+        void testCreateTestUsers_Exception() {
+            when(resourceHandler.getTestUserDbUsernames()).thenThrow(new RuntimeException("File not found"));
 
             boolean result = userService.createTestUsers();
 
@@ -727,17 +714,14 @@ class UserServiceTests {
 
     @Nested
     class DeleteTestUsersTests {
-        @Mock
-        private Resource dbUsernamesResource;
-
         private List<String> testUsernames;
 
         @BeforeEach
         void setupDeleteTestUsers() throws Exception {
             testUsernames = Arrays.asList("testuser1", "testuser2", "testuser3");
 
-            // Mock the resource file reading
-            lenient().when(dbUsernamesResource.getInputStream()).thenReturn(new ByteArrayInputStream("testuser1\ntestuser2\ntestuser3".getBytes()));
+            // Mock the resource handler
+            when(resourceHandler.getTestUserDbUsernames()).thenReturn(testUsernames);
 
             // Mock users that exist
             lenient().when(userRepo.findByUserName("testuser1")).thenReturn(Optional.of(
@@ -749,11 +733,6 @@ class UserServiceTests {
             lenient().when(userRepo.findByUserName("testuser3")).thenReturn(Optional.of(
                 User.builder().id(103).userName("testuser3").hashedPassword("hash3").build()
             ));
-
-            // Set the mock resource using reflection
-            Field dbUsernamesField = UserService.class.getDeclaredField("dbUsernamesResource");
-            dbUsernamesField.setAccessible(true);
-            dbUsernamesField.set(userService, dbUsernamesResource);
         }
 
         @Test
@@ -766,8 +745,8 @@ class UserServiceTests {
         }
 
         @Test
-        void testDeleteTestUsers_Exception() throws Exception {
-            when(dbUsernamesResource.getInputStream()).thenThrow(new RuntimeException("File not found"));
+        void testDeleteTestUsers_Exception() {
+            when(resourceHandler.getTestUserDbUsernames()).thenThrow(new RuntimeException("File not found"));
 
             boolean result = userService.deleteTestUsers();
 

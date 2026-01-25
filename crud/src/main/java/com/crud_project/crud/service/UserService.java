@@ -1,21 +1,15 @@
 package com.crud_project.crud.service;
 
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StreamUtils;
 
 import com.crud_project.crud.entity.PageState;
 import com.crud_project.crud.entity.User;
@@ -34,29 +28,10 @@ import lombok.extern.slf4j.Slf4j;
 public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepo userRepo;
+    private final ResourceHandler resourceHandler;
+
     private final Random random = new Random();
-
-    @Value("classpath:static/data/dbUsernames.txt")
-    private Resource dbUsernamesResource;
-    @Value("classpath:static/data/dbPassword.txt")
-    private Resource dbPasswordResource;
-
-
-    private String readResourceFile(Resource resource) throws Exception{
-        try(InputStream inputStream = resource.getInputStream()){
-            return StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
-        }
-    }
-
-    private List<String> getResourceAsListOfStr(Resource resource){
-        try{
-            return Arrays.asList(readResourceFile(resource).split("\\r?\\n"));
-        }
-        catch (Exception e){
-            log.error("Error reading dbUsernamesResource: {}", e.getMessage());
-            return null;
-        }
-    }
+    
 
     public List<User> getAllUsers() {
         return userRepo.findAll();
@@ -211,11 +186,11 @@ public class UserService {
     @Transactional
     public boolean createTestUsers(){
         try {
-            List<String> usernames = getResourceAsListOfStr(dbUsernamesResource);
+            List<String> usernames = resourceHandler.getTestUserDbUsernames();
             log.warn("DEBUG: usernames: {}", usernames);
             Collections.shuffle(usernames);
 
-            String password = readResourceFile(dbPasswordResource);
+            String password = resourceHandler.getTestUserDbPasswords().get(0);
             String hashedPassword = passwordEncoder.encode(password);
             
             for (String username : usernames) {
@@ -242,7 +217,7 @@ public class UserService {
      */
     public boolean deleteTestUsers(){
         try {
-            List<String> usernames = getResourceAsListOfStr(dbUsernamesResource);
+            List<String> usernames = resourceHandler.getTestUserDbUsernames();
             
             for (String username : usernames) {
                 User user = getUserByName(username.trim());
