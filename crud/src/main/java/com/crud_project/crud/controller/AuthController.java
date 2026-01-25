@@ -1,7 +1,7 @@
 package com.crud_project.crud.controller;
 
-import java.util.Map;
 
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,29 +24,33 @@ import lombok.extern.slf4j.Slf4j;
 public class AuthController {
     private final UserService userService;
 
-    private static final Map<String, String> UriToTemplateNameMap = Map.of(
-        "/auth/login", "login",
-        "/auth/register", "register",
-        "/", "home",
-        "/home", "home"
-    );
-
-
-    // This redirects anyone who is already authenticated to the /crud page
+    /**
+     *  Redirects anyone who is already authenticated to the "/crud" endpoint instead
+     */ 
     public String authRedirect(HttpServletRequest request, Authentication authentication, HttpSession session){
-        // if none provided default to home
+        if (authentication != null && 
+            authentication.isAuthenticated() &&
+            !(authentication instanceof AnonymousAuthenticationToken)) {
+            log.info("User {} is already authenticated, directing to " + "/crud", authentication.getName());
+            return "redirect:" + "/crud";
+        }
+
         if (request == null) {
-            log.info("No request provided, directing to /home");
-            return "/home";
+            log.warn("No request provided, directing to /home");
+            return "redirect:" + "/home";
         }
-        String requestedUri = request.getRequestURI();
-        if (authentication != null && authentication.isAuthenticated() &&
-            !authentication.getName().equals("anonymousUser")) {
-            log.info("User {} already authenticated, directing to " + "/crud", authentication.getName());
-            return "/crud";
+
+
+        String destination = request.getRequestURI().substring(1);
+        log.info("User is not authenticated, showing requested template");
+        
+
+         // if none provided default to home
+        if (destination.equals("") || destination.equals("/")) {
+            log.warn("Destination empty, directing to " + "/home");
+            return "redirect:" + "/home";
         }
-        String destination = UriToTemplateNameMap.get(requestedUri);
-        log.info("User not authenticated, directing to {}", destination);
+
         return destination;
     }
     
@@ -55,6 +59,7 @@ public class AuthController {
         return authRedirect(request, authentication, session);
     }
 
+
     @PostMapping("/register")
     public String registerPost(@RequestParam String username, @RequestParam String password) {
         if (StringValidation.isValidUsername(username) 
@@ -62,12 +67,6 @@ public class AuthController {
         && (userService.registerUser(username, password) != null)) {
             return "redirect:" + "/auth" + "/login";
         }
-        return "redirect:" + "/auth" + "/register" + "?error";
-    }
-
-    @PostMapping("/logout")
-    public String logoutPost(HttpServletRequest request) {
-        userService.logout(request);
-        return "redirect:" + "/login" + "?logout";
+        return "redirect:" + "/auth" + "/register" + "?error=true";
     }
 }
