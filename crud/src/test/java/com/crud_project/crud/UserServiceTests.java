@@ -1,5 +1,6 @@
 package com.crud_project.crud;
 
+import java.io.ByteArrayInputStream;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collections;
@@ -32,6 +33,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -177,6 +179,14 @@ class UserServiceTests {
             assertNull(result);
             verify(userRepo, times(1)).findByUserName(username);
         }
+
+        @Test
+        void testGetUserByName_NullUsername() {
+            User result = userService.getUserByName(null);
+
+            assertNull(result);
+            verify(userRepo, never()).findByUserName(anyString());
+        }
     }
 
     @Nested
@@ -198,17 +208,29 @@ class UserServiceTests {
             verify(userRepo, times(1)).findById(id);
         }
 
-        // @Test
-        // void testGetUserById_UserDoesNotExist() {
-        //     int id = 999;
+        @Test
+        void testGetUserById_UserDoesNotExist() {
+            int id = 999;
 
-        //     when(userRepo.findById(id)).thenReturn(Optional.empty());
+            when(userRepo.findById(id)).thenReturn(Optional.empty());
 
-        //     User result = userService.getUserById(id);
+            User result = userService.getUserById(id);
 
-        //     assertNull(result);
-        //     verify(userRepo, times(1)).findById(id);
-        // }
+            assertNull(result);
+            verify(userRepo, times(1)).findById(id);
+        }
+
+        @Test
+        void testGetUserById_NegativeId() {
+            int id = -1;
+
+            when(userRepo.findById(id)).thenReturn(Optional.empty());
+
+            User result = userService.getUserById(id);
+
+            assertNull(result);
+            verify(userRepo, times(1)).findById(id);
+        }
     }
 
     @Nested
@@ -639,6 +661,128 @@ class UserServiceTests {
             verify(userRepo, times(1)).findByUserName(user1.getUserName());
             verify(userRepo, times(1)).findAllUserNames(PageRequest.of(0, 10));
             verify(userRepo, times(1)).findByUserName("nonexistentWinner");
+        }
+    }
+
+    @Nested
+    class CreateTestUsersTests {
+        @Mock
+        private Resource dbUsernamesResource;
+
+        @Mock
+        private Resource dbPasswordResource;
+
+        private List<String> testUsernames;
+        private String testPassword;
+        private String hashedPassword;
+
+        @BeforeEach
+        void setupCreateTestUsers() throws Exception {
+            testUsernames = Arrays.asList("testuser1", "testuser2", "testuser3");
+            testPassword = "testpassword123";
+            hashedPassword = "hashedTestPassword";
+
+            // Mock the resource file reading
+            lenient().when(dbUsernamesResource.getInputStream()).thenReturn(new ByteArrayInputStream("testuser1\ntestuser2\ntestuser3".getBytes()));
+            lenient().when(dbPasswordResource.getInputStream()).thenReturn(new ByteArrayInputStream(testPassword.getBytes()));
+
+            // Mock password encoding
+            lenient().when(passwordEncoder.encode(testPassword)).thenReturn(hashedPassword);
+
+            // Set the mock resources using reflection
+            Field dbUsernamesField = UserService.class.getDeclaredField("dbUsernamesResource");
+            dbUsernamesField.setAccessible(true);
+            dbUsernamesField.set(userService, dbUsernamesResource);
+
+            Field dbPasswordField = UserService.class.getDeclaredField("dbPasswordResource");
+            dbPasswordField.setAccessible(true);
+            dbPasswordField.set(userService, dbPasswordResource);
+        }
+
+        @Test
+        void testCreateTestUsers_Success() {
+            when(userRepo.save(any(User.class))).thenAnswer(invocation -> {
+                User user = invocation.getArgument(0);
+                user.setId(1); // Simulate ID assignment
+                return user;
+            });
+
+            boolean result = userService.createTestUsers();
+
+            assertTrue(result);
+            verify(userRepo, times(3)).save(any(User.class));
+            verify(passwordEncoder, times(1)).encode(testPassword);
+        }
+
+        @Test
+        void testCreateTestUsers_Exception() throws Exception {
+            when(dbUsernamesResource.getInputStream()).thenThrow(new RuntimeException("File not found"));
+
+            boolean result = userService.createTestUsers();
+
+            assertFalse(result);
+            verify(userRepo, never()).save(any(User.class));
+        }
+    }
+
+    @Nested
+    class DeleteTestUsersTests {
+        @Mock
+        private Resource dbUsernamesResource;
+
+        private List<String> testUsernames;
+
+        @BeforeEach
+        void setupDeleteTestUsers() throws Exception {
+            testUsernames = Arrays.asList("testuser1", "testuser2", "testuser3");
+
+            // Mock the resource file reading
+            lenient().when(dbUsernamesResource.getInputStream()).thenReturn(new ByteArrayInputStream("testuser1\ntestuser2\ntestuser3".getBytes()));
+
+            // Mock users that exist
+            lenient().when(userRepo.findByUserName("testuser1")).thenReturn(Optional.of(
+                User.builder().id(101).userName("testuser1").hashedPassword("hash1").build()
+            ));
+            lenient().when(userRepo.findByUserName("testuser2")).thenReturn(Optional.of(
+                User.builder().id(102).userName("testuser2").hashedPassword("hash2").build()
+            ));
+            lenient().when(userRepo.findByUserName("testuser3")).thenReturn(Optional.of(
+                User.builder().id(103).userName("testuser3").hashedPassword("hash3").build()
+            ));
+
+            // Set the mock resource using reflection
+            Field dbUsernamesField = UserService.class.getDeclaredField("dbUsernamesResource");
+            dbUsernamesField.setAccessible(true);
+            dbUsernamesField.set(userService, dbUsernamesResource);
+        }
+
+        @Test
+        void testDeleteTestUsers_Success() throws Exception {
+            boolean result = userService.deleteTestUsers();
+
+            assertTrue(result);
+            verify(userRepo, times(3)).findByUserName(anyString());
+            verify(userRepo, times(3)).deleteById(anyInt());
+        }
+
+        @Test
+        void testDeleteTestUsers_Exception() throws Exception {
+            when(dbUsernamesResource.getInputStream()).thenThrow(new RuntimeException("File not found"));
+
+            boolean result = userService.deleteTestUsers();
+
+            assertFalse(result);
+            verify(userRepo, never()).findByUserName(anyString());
+        }
+
+        @Test
+        void testDeleteTestUsers_UserNotFound() {
+            when(userRepo.findByUserName("testuser2")).thenReturn(Optional.empty());
+
+            boolean result = userService.deleteTestUsers();
+
+            assertFalse(result);
+            verify(userRepo, times(2)).findByUserName(anyString());
         }
     }
 }
