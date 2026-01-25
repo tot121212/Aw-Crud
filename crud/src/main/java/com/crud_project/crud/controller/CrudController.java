@@ -24,7 +24,12 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class CrudController {
     private final UserService userService;
-    
+
+    @GetMapping("/.well-known/**")
+    @ResponseBody
+    public ResponseEntity<Void> handleWellKnown() {
+        return ResponseEntity.notFound().build();
+    }
 
     @GetMapping("") //"/crud"
     public String getCrud(
