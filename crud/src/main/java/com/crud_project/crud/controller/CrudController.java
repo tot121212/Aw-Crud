@@ -63,8 +63,7 @@ public class CrudController {
     @PostMapping("/delete-all-users")
     public String deleteAllUsersPost(HttpServletRequest request) {
         userService.deleteAllUsers();
-        userService.logout(request);
-        return "redirect:/home";
+        return "redirect:/logout";
     }
 
     // @PostMapping("/create")

@@ -204,16 +204,6 @@ public class UserService {
         return createdUser;
     }
 
-    /**
-     * Logs user out from session
-     * @param request
-     */
-    public void logout(HttpServletRequest request){
-        log.info("Logging out user: {}", request.getRemoteUser());
-        SecurityContextHolder.clearContext();
-        request.getSession().invalidate();
-    }
-
     private static final int RNG_MIN_CRUDS = 0;
     private static final int RNG_MAX_CRUDS = 100;
     /**
