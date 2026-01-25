@@ -290,9 +290,10 @@ public class UserService {
             log.warn("No participants found");
             return null;
         }
-        if (!participants.contains(username)){
-            participants.add(username);
-        }
+        participants.remove(username);
+        participants.add(0, username);
+        participants = Collections.unmodifiableList(participants);
+        // the participants list now predictably has the currentUser at the beginning
 
         String winnerName = participants.get(
             random.nextInt(participants.size()));
