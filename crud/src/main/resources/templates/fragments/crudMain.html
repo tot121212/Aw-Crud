@@ -14,17 +14,17 @@
     </section>
 
     <div class="container flex-column flex-justify-center flex-align-center" id="request-page-form-container">
-        <h3 th:if="${param.userTableError}" class="error">Table request was not valid</h3>
+        <h3 th:if="${param.userTableError != null}" class="error">Table request was not valid</h3>
         <div class="flex-row flex-justify-center flex-align-center" style="gap: 4rem;">
             <form class="flex-column flex-align-center" 
-                th:if="${currentUser_pageState != null}" id="request-page-form" method="post" 
+                th:if="${session.currentUser_pageState != null}" id="request-page-form" method="post" 
                     th:action="@{/crud/requestPage}">
                 <label class="flex-column flex-align-center" for="pageNumber">Page:
                     <input id="pageNumber" type="number" name="pageNumber"
-                    th:value="${currentUser_pageState.page}" required min="0"></label>
+                    th:value="${session.currentUser_pageState.getPage()}" required min="0"></label>
                 <label class="flex-column flex-align-center" for="pageSize">Size:
                     <input id="pageSize" type="number" name="pageSize"
-                    th:value="${currentUser_pageState.size}" required min="0" max="100"></label>
+                    th:value="${session.currentUser_pageState.getSize()}" required min="0" max="100"></label>
                 <button type="submit">Request Page</button>
             </form>
             <form th:if="${requestPage_userProjections != null}" method="post" 
