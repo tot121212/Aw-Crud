@@ -120,11 +120,11 @@ public class CrudController {
 
     @PostMapping("/spinWheel")
     public String spinWheelPost(
-        @SessionAttribute(SessionKeys.CUR_USER_NAME) String name, 
-        @SessionAttribute(SessionKeys.CUR_USER_PAGE_STATE) PageState pageState, 
-        RedirectAttributes redirectAttributes
+        Authentication authentication,
+        RedirectAttributes redirectAttributes,
+        @SessionAttribute(SessionKeys.CUR_USER_PAGE_STATE) PageState pageState
     ) {
-        WheelSpinResult wheelSpinResult = userService.spinWheel(name, pageState);
+        WheelSpinResult wheelSpinResult = userService.spinWheel(authentication.getName(), pageState);
         redirectAttributes.addFlashAttribute(ModelKeys.WHEEL_WINNER, wheelSpinResult.getWinnerName());
         redirectAttributes.addFlashAttribute(ModelKeys.WHEEL_PARTICIPANTS, wheelSpinResult.getParticipants());
         return "redirect:/crud" + "#user-wheel";
