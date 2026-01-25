@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StreamUtils;
@@ -24,7 +23,6 @@ import com.crud_project.crud.entity.WheelSpinResult;
 import com.crud_project.crud.repository.UserProjection;
 import com.crud_project.crud.repository.UserRepo;
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -147,7 +145,7 @@ public class UserService {
     /**
      * @param page
      * @param size
-     * @return Page<String> || null
+     * @return Page of String || Empty Page of String
      */
     public Page<String> getUserNamesByPageState(PageState pageState) {
         if (pageState == null) return Page.empty();
@@ -264,16 +262,6 @@ public class UserService {
         }
     }
     
-    @Transactional
-    public User spinWheelTransaction(User winnerUser, User currentUser){
-        winnerUser.setDead(true);
-        updateUser(winnerUser); // update user on db
-
-        currentUser.setAwCrudsPerformed(currentUser.getAwCrudsPerformed() + 1);
-        updateUser(currentUser);
-
-        return winnerUser;
-    }
     
     /**
      *  Spin the wheel and return the name of the user that was "dead" or null
@@ -283,42 +271,41 @@ public class UserService {
      * @param size
      * @return WheelSpinResult || null || throws Unchecked (which will be caught by @Transactional)
      */
+    @Transactional
     public WheelSpinResult spinWheel(String username, PageState pageState) {
-        try {
-            if (getDeadByName(username)){
-                throw new Exception(String.format("User '%s' is dead", username));
-            }
-            User currentUser = getUserByName(username);
-            if (currentUser == null){
-                throw new Exception(String.format("User '%s' not found", username));
-            }
+        
+        if (getDeadByName(username)) return null;
 
-            List<String> participants = 
-                getUserNamesByPageState(pageState)
-                .stream()
-                .collect(Collectors.toList());
-            if (participants.isEmpty()){
-                throw new Exception("No usernames found");
-            }
-            if (!participants.contains(username)){
-                participants.add(username);
-            }
+        User currentUser = getUserByName(username);
+        if (currentUser == null) return null;
 
-            String winnerName = participants.get(
-                random.nextInt(participants.size()));
-            
-            User winnerUser = getUserByName(winnerName);
-            if (winnerUser == null){
-                throw new Exception(String.format("User '%s' not found", winnerName));
-            }
-            
-            winnerUser = spinWheelTransaction(winnerUser, currentUser);
+        Page<String> pageOfParticipants = getUserNamesByPageState(pageState);
+        if (pageOfParticipants == null) return null;
 
-            return new WheelSpinResult(winnerUser.getUserName(), participants);
-        } catch (Exception e) {
-            log.warn(e.getMessage());
-            //e.printStackTrace();
+        List<String> participants = 
+            pageOfParticipants
+            .stream()
+            .collect(Collectors.toList());
+        if (participants.isEmpty()){
+            log.warn("No participants found");
             return null;
         }
+        if (!participants.contains(username)){
+            participants.add(username);
+        }
+
+        String winnerName = participants.get(
+            random.nextInt(participants.size()));
+        
+        User winnerUser = getUserByName(winnerName);
+        if (winnerUser == null){
+            log.warn("Winner is not found");
+            return null;
+        }
+
+        winnerUser.setDead(true);
+        currentUser.setAwCrudsPerformed(currentUser.getAwCrudsPerformed() + 1);
+        
+        return new WheelSpinResult(winnerUser.getUserName(), participants);
     }
 }
