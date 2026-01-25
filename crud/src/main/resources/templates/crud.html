@@ -5,7 +5,7 @@
         <title>Aw CRUD</title>
         <link rel="stylesheet" type="text/css" th:href="@{/css/css-reset.css}">
         <link rel="stylesheet" type="text/css" th:href="@{/css/main.css}">
-        <link rel="stylesheet" type="text/css" th:href="@{/css/wheel.css}">
+        <link th:if="${wheel_participants != null and wheel_winner != null}" rel="stylesheet" type="text/css" th:href="@{/css/wheel.css}">
     </head>
     <body>
         <div id="content" th:if="${currentUser_userProjectionImpl != null}">
