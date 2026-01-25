@@ -16,9 +16,6 @@
                 <section></section>
             </header>
             <main class="flex-column">
-                <h3 th:if="${param.logout}" class="container flex-column flex-align-center" style="color: var(--primary-color)">
-                    You have been logged out.
-                </h3>
                 <div class="container flex-column flex-align-center">
                     <form th:action="@{/auth/login}" method="get">
                         <button type="submit">Login</button>

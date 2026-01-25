@@ -30,7 +30,7 @@
                             <br>At least one digit, 
                             <br>At least one of these characters: <span class="bold">#?!@$%^&*</span>
                         </div>
-                        <h3 th:if="${param.error}" class="error">
+                        <h3 th:if="${param.error != null}" class="error">
                             Problem during registration.
                         </h3>
                         <input type="submit" value="Register"/>
