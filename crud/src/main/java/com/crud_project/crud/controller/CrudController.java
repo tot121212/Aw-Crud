@@ -1,11 +1,14 @@
 package com.crud_project.crud.controller;
 
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -34,13 +37,18 @@ public class CrudController {
     @GetMapping("") //"/crud"
     public String getCrud(
         Model model,
-        @SessionAttribute(SessionKeys.CUR_USER_NAME) String name, 
+        Authentication authentication,
         @SessionAttribute(SessionKeys.CUR_USER_PAGE_STATE) PageState pageState
     ) {
+        // if (authentication.getPrincipal() instanceof CustomUserDetails userDetails){
+        //     log.info("CustomUserDetails ID: " + userDetails.getId());
+        // } else {
+        //     log.info("CustomUserDetails not found");
+        // }
         //log.info(String.valueOf(userService.getUserProjectionByName(name).isDead()));
         model.addAttribute(
             ModelKeys.CUR_USER_PROJECTION, 
-            userService.getUserProjectionByName(name));
+            userService.getUserProjectionByName(authentication.getName()));
         model.addAttribute(
             ModelKeys.REQ_PAGE_PROJECTIONS, 
             userService.getUserProjectionsByPageState(pageState));
@@ -112,6 +120,7 @@ public class CrudController {
                     .size(pageSize)
                     .build()
             );
+            //log.info("CUR_USER_PAGE_STATE: " + session.getAttribute(SessionKeys.CUR_USER_PAGE_STATE).toString());
             return "redirect:/crud" + "#user-table";
         }
 
