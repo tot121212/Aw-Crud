@@ -1,4 +1,4 @@
-package com.crud_project.crud;
+package com.crud_project.crud.test;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
