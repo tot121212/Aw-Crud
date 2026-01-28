@@ -1,0 +1,15 @@
+package com.crud_project.crud.test;
+
+import org.springframework.boot.SpringApplication;
+
+import com.crud_project.crud.CrudApplication;
+
+public class TestCrudApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.from(CrudApplication::main)
+                .with(DatabaseTestcontainersConfiguration.class)
+                .run(args);
+    }
+
+}
