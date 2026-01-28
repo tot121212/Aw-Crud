@@ -1,55 +1,117 @@
-# Aw Crud...
+# Aw Crud
 
-### Requirements
+A Spring Boot CRUD application with a "Wheel of Death" game mechanic. Users can register, view user lists, and spin a wheel where the "winner" faces deletion (marked as dead).
+
+## Quick Start
+
+### Prerequisites
 
 - Ubuntu/Debian or similar
-- Docker >= 24.x
-- Docker Compose >= 2.x
-- Java 17 (for local execution)
+- Java 17
+- Docker 24.x or newer
+- Maven (for development)
 
-### What this does fundamentally
+### Production (Docker)
 
-- Installs Docker
-- Builds an image of the Aw Crud app
-- Starts a Docker Compose that runs two containers
-    - The app itself
-    - A Postgres database which is used by said app
+Run the application with a single command:
 
-### Setup docker and run the server + database
+```bash
+docker compose up -d
+```
 
-    sudo apt update
+> The application will be available at `http://localhost:9797`
 
-    Install Docker
+### Development
 
-    docker compose build
-    docker compose up -d
+1. **Run the application**:
 
-### To attach run this command
+   ```bash
+   cd crud
+   ./mvnw spring-boot:run
+   ```
 
-    docker attach aw-crud-app
+    ***Note***:\
+    No need to worry about starting the database.\
+    It will start automatically via the `spring-boot-docker-compose` dependency.
 
-### To run the app without docker
+1. **Access the application**:
+   Navigate to `http://localhost:9797`
 
-You can run the app itself without docker but Docker is still required for the database.
+## Architecture
 
-    sudo apt update
+| Component | Technology | Purpose |
+|-----------|------------|---------|
+| `Application` | Spring Boot 4.0.2 (Java 17) | MVC API and web interface |
+| `Database` | PostgreSQL with JPA/Hibernate | User data storage |
+| `Frontend` | Thymeleaf templates with CSS/JavaScript | User interface |
+| `Security` | Spring Security with login/register | Authentication and authorization |
+| `Build` | Maven | Dependency management and building |
+| `Game Mechanic` | Wheel of Death | Users can be "deleted" (marked as dead) |
 
-    Install Java 17
-    Install Docker
+## Game Mechanics
 
-    export JAVA_HOME="/path/to/openjdk-17-jdk" (same here)
-    export PATH="$JAVA_HOME/bin:$PATH"
-    
-    cd ./crud
-    ./run.sh
+1. **Choosing your risk**:
+   - Request a page of users of a varying size.
+   - Your username is also be added to the wheel
 
-### To rebuild the .jar on linux
+1. **The Wheel of Death**:
+   - Spin the wheel
+   - The "winner" is marked as dead (soft delete)
 
-    cd ./crud
-    sudo apt update
+## Configuration
 
-    Install Java 17
+### Environment Variables
 
-    export JAVA_HOME="/path/to/openjdk-17-jdk"
-    export PATH="$JAVA_HOME/bin:$PATH"
-    ./compile.sh
+The containers uses the following environment variables (defined in `.env`):
+
+```bash
+DB_NAME=aw_crud_db
+DB_USERNAME=username
+DB_PASSWORD=password
+SERVER_EXTERNAL_PORT=9797
+```
+
+### Application Properties
+
+Key configuration in `src/main/resources/application.properties`:
+
+```properties
+server.port=9797
+spring.datasource.url=jdbc:postgresql://localhost:9898/aw_crud_db
+spring.jpa.hibernate.ddl-auto=update
+```
+
+## Development
+
+### Building the Application
+
+```bash
+cd crud
+./mvnw clean package
+```
+
+### Running Tests
+
+```bash
+cd crud
+./mvnw test
+```
+
+### Database Schema
+
+The application uses JPA with automatic schema generation:
+
+- `User`: Main user entity with username, password, and deletion status
+
+## Main API Endpoints
+
+- `GET /` - Home page (login/register)
+- `GET /crud` - Main CRUD interface (requires authentication)
+- `POST /crud/requestPage` - Request user page
+- `POST /crud/spinWheel` - Spin the wheel of death
+
+## Security
+
+- Password requirements: 8+ characters with uppercase, lowercase, digit, and special character
+- Username requirements: 3-32 alphanumeric characters
+- Session-based authentication with `Spring Security`
