@@ -18,30 +18,34 @@ public class WebSecurityConfig {
     private final UserDetailsServiceImpl userDetailsService;
 
     @Bean
-    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .userDetailsService(userDetailsService)
-                .authorizeHttpRequests((requests) -> requests
-                .requestMatchers("/error", "/", "/home", "/auth/register", "/auth/login", "/css/**", "/data/**", "/js/**", "/svg/**", "/.well-known/**")
-                .permitAll()
-                .anyRequest().authenticated())
-                .formLogin((form) -> form
-                .loginPage("/auth/login")
-                .failureUrl("/auth/login?error=true")
-                .permitAll()
+                .authorizeHttpRequests(
+                        (requests) -> requests
+                                .requestMatchers("/error", "/", "/home", "/auth/register", "/auth/login", "/css/**", "/data/**", "/js/**", "/svg/**", "/.well-known/**")
+                                .permitAll()
+                                .anyRequest().authenticated()
                 )
-                .logout(logout -> logout
-                .logoutUrl("/auth/logout")
-                .logoutSuccessUrl("/auth/login?logout=true")
-                .invalidateHttpSession(true)
-                .clearAuthentication(true)
-                .permitAll()
+                .formLogin(
+                        (form) -> form
+                                .loginPage("/auth/login")
+                                .failureUrl("/auth/login?error=true")
+                                .permitAll()
+                )
+                .logout(
+                        logout -> logout
+                                .logoutUrl("/auth/logout")
+                                .logoutSuccessUrl("/auth/login?logout=true")
+                                .invalidateHttpSession(true)
+                                .clearAuthentication(true)
+                                .permitAll()
                 );
         return http.build();
     }
 
     @Bean
-    PasswordEncoder passwordEncoder() {
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 }
