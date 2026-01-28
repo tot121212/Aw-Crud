@@ -51,6 +51,7 @@ import lombok.extern.slf4j.Slf4j;
 @ExtendWith(MockitoExtension.class)
 @Slf4j
 class UserServiceTests {
+
     @InjectMocks
     private UserService userService;
 
@@ -79,48 +80,47 @@ class UserServiceTests {
     void init() throws Exception {
         // Initialize base users
         user1 = User.builder()
-            .id(1)
-            .userName("user1")
-            .hashedPassword("hash1")
-            .dead(false)
-            .awCrudsPerformed(0)
-            .build();
+                .id(1)
+                .userName("user1")
+                .hashedPassword("hash1")
+                .dead(false)
+                .awCrudsPerformed(0)
+                .build();
 
         user2 = User.builder()
-            .id(2)
-            .userName("user2")
-            .hashedPassword("hash2")
-            .dead(false)
-            .awCrudsPerformed(0)
-            .build();
+                .id(2)
+                .userName("user2")
+                .hashedPassword("hash2")
+                .dead(false)
+                .awCrudsPerformed(0)
+                .build();
 
         user3 = User.builder()
-            .id(3)
-            .userName("user3")
-            .hashedPassword("hash3")
-            .dead(false)
-            .awCrudsPerformed(0)
-            .build();
+                .id(3)
+                .userName("user3")
+                .hashedPassword("hash3")
+                .dead(false)
+                .awCrudsPerformed(0)
+                .build();
 
         user4 = User.builder()
-            .id(4)
-            .userName("user4")
-            .hashedPassword("hash4")
-            .dead(false)
-            .awCrudsPerformed(0)
-            .build();
+                .id(4)
+                .userName("user4")
+                .hashedPassword("hash4")
+                .dead(false)
+                .awCrudsPerformed(0)
+                .build();
 
         baseUsers = Arrays.asList(user1, user2, user3, user4);
 
         randomMock = Mockito.mock(Random.class);
         // Always return 0 for nextInt
         lenient()
-            .when(randomMock.nextInt(anyInt()))
-            .thenAnswer(invocation -> {
-                return ((int) invocation.getArgument(0) - 1);
-            }
-        );
-
+                .when(randomMock.nextInt(anyInt()))
+                .thenAnswer(invocation -> {
+                    return ((int) invocation.getArgument(0) - 1);
+                }
+                );
 
         // Overwrite the private final field using reflection
         Field randomField = UserService.class.getDeclaredField("random");
@@ -130,6 +130,7 @@ class UserServiceTests {
 
     @Nested
     class GetAllUsersTests {
+
         @Test
         void testGetAllUsers_WithUsers() {
             when(userRepo.findAll()).thenReturn(baseUsers);
@@ -156,6 +157,7 @@ class UserServiceTests {
 
     @Nested
     class GetUserByNameTests {
+
         @Test
         void testGetUserByName_UserExists() {
             String username = user1.getUserName();
@@ -193,6 +195,7 @@ class UserServiceTests {
 
     @Nested
     class GetUserByIdTests {
+
         @Test
         void testGetUserById_UserExists() {
             int id = user1.getId();
@@ -237,6 +240,7 @@ class UserServiceTests {
 
     @Nested
     class CreateUserTests {
+
         @Test
         void testCreateUser_Success() {
             User userToCreate = User.builder().userName(user1.getUserName()).hashedPassword(user1.getHashedPassword()).build();
@@ -255,6 +259,7 @@ class UserServiceTests {
 
     @Nested
     class UpdateUserTests {
+
         @Test
         void testUpdateUser_UserExists() {
             User updatedUser = User.builder().id(user1.getId()).userName(user1.getUserName()).hashedPassword("newHash").build();
@@ -286,6 +291,7 @@ class UserServiceTests {
 
     @Nested
     class DeleteUserByIdTests {
+
         @Test
         void testDeleteUserById_Success() {
             int id = user1.getId();
@@ -315,11 +321,12 @@ class UserServiceTests {
 
     @Nested
     class GetUserProjectionsByPageStateTests {
+
         @Test
         void testGetUserProjectionsByPageState_Success() {
             PageState pageState = PageState.builder().build();
             List<UserProjection> projections = Arrays.asList(
-                userProjection
+                    userProjection
             );
             Page<UserProjection> page = new PageImpl<>(projections);
 
@@ -356,6 +363,7 @@ class UserServiceTests {
 
     @Nested
     class GetExistsByUsernameTests {
+
         @Test
         void testGetExistsByUsername_Exists() {
             String username = user1.getUserName();
@@ -383,6 +391,7 @@ class UserServiceTests {
 
     @Nested
     class GetUserProjectionByNameTests {
+
         @Test
         void testGetUserProjectionByName_UserExists() {
             String username = user1.getUserName();
@@ -411,6 +420,7 @@ class UserServiceTests {
 
     @Nested
     class GetUserNamesByPageStateTests {
+
         @Test
         void testGetUserNamesByPageState_Success() {
             PageState pageState = PageState.builder().build();
@@ -438,6 +448,7 @@ class UserServiceTests {
 
     @Nested
     class GetDeadByNameTests {
+
         @Test
         void testGetDeadByName_UserIsDead() {
             String username = user1.getUserName();
@@ -479,6 +490,7 @@ class UserServiceTests {
 
     @Nested
     class DeleteAllUsersTests {
+
         @Test
         void testDeleteAllUsers_Success() {
             doNothing().when(userRepo).deleteAll();
@@ -501,7 +513,8 @@ class UserServiceTests {
     }
 
     @Nested
-    class RegisterUserTests{
+    class RegisterUserTests {
+
         private String username;
         private String password;
         private String hashedPassword;
@@ -561,10 +574,10 @@ class UserServiceTests {
             page = new PageImpl<>(usernames);
 
             userMap = Map.of(
-                user1.getUserName(), user1,
-                user2.getUserName(), user2,
-                user3.getUserName(), user3,
-                user4.getUserName(), user4
+                    user1.getUserName(), user1,
+                    user2.getUserName(), user2,
+                    user3.getUserName(), user3,
+                    user4.getUserName(), user4
             );
 
             // Common stubs
@@ -668,6 +681,7 @@ class UserServiceTests {
 
     @Nested
     class CreateTestUsersTests {
+
         private List<String> testUsernames;
         private String testPassword;
         private String hashedPassword;
@@ -714,6 +728,7 @@ class UserServiceTests {
 
     @Nested
     class DeleteTestUsersTests {
+
         private List<String> testUsernames;
 
         @BeforeEach
@@ -725,13 +740,13 @@ class UserServiceTests {
 
             // Mock users that exist
             lenient().when(userRepo.findByUserName("testuser1")).thenReturn(Optional.of(
-                User.builder().id(101).userName("testuser1").hashedPassword("hash1").build()
+                    User.builder().id(101).userName("testuser1").hashedPassword("hash1").build()
             ));
             lenient().when(userRepo.findByUserName("testuser2")).thenReturn(Optional.of(
-                User.builder().id(102).userName("testuser2").hashedPassword("hash2").build()
+                    User.builder().id(102).userName("testuser2").hashedPassword("hash2").build()
             ));
             lenient().when(userRepo.findByUserName("testuser3")).thenReturn(Optional.of(
-                User.builder().id(103).userName("testuser3").hashedPassword("hash3").build()
+                    User.builder().id(103).userName("testuser3").hashedPassword("hash3").build()
             ));
         }
 
