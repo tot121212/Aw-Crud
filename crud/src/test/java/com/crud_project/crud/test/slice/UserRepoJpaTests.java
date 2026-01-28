@@ -23,11 +23,8 @@ import com.crud_project.crud.repository.UserProjection;
 import com.crud_project.crud.repository.UserRepo;
 import com.crud_project.crud.test.config.DatabaseTestcontainersConfiguration;
 
-import lombok.extern.slf4j.Slf4j;
-
 @DataJpaTest
 @Import(DatabaseTestcontainersConfiguration.class)
-@Slf4j
 public class UserRepoJpaTests {
 
     @Autowired

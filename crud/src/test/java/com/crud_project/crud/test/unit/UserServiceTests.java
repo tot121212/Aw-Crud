@@ -46,10 +46,7 @@ import com.crud_project.crud.repository.UserRepo;
 import com.crud_project.crud.service.ResourceHandler;
 import com.crud_project.crud.service.UserService;
 
-import lombok.extern.slf4j.Slf4j;
-
 @ExtendWith(MockitoExtension.class)
-@Slf4j
 class UserServiceTests {
 
     @InjectMocks
