@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.crud_project.crud.entity.PageState;
-import com.crud_project.crud.entity.WheelSpinResult;
+import com.crud_project.crud.dvo.PageState;
+import com.crud_project.crud.dvo.WheelSpinResult;
 import com.crud_project.crud.service.UserService;
 
 import jakarta.servlet.http.HttpServletRequest;

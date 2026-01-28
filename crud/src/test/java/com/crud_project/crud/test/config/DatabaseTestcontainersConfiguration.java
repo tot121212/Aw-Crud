@@ -1,4 +1,4 @@
-package com.crud_project.crud.test;
+package com.crud_project.crud.test.config;
 
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;

@@ -1,4 +1,4 @@
-package com.crud_project.crud;
+package com.crud_project.crud.security;
 
 import java.io.IOException;
 
@@ -9,7 +9,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.util.WebUtils;
 
 import com.crud_project.crud.controller.SessionKeys;
-import com.crud_project.crud.entity.PageState;
+import com.crud_project.crud.dvo.PageState;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

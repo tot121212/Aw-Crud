@@ -1,8 +1,4 @@
-package com.crud_project.crud.test;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+package com.crud_project.crud.test.slice;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -10,18 +6,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import com.crud_project.crud.entity.User;
 import com.crud_project.crud.repository.UserProjection;
 import com.crud_project.crud.repository.UserRepo;
+import com.crud_project.crud.test.config.DatabaseTestcontainersConfiguration;
 
 import lombok.extern.slf4j.Slf4j;
 

@@ -1,4 +1,4 @@
-package com.crud_project.crud.entity;
+package com.crud_project.crud.repository.impl;
 
 import java.io.Serializable;
 

@@ -1,4 +1,4 @@
-package com.crud_project.crud.test;
+package com.crud_project.crud.test.unit;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
@@ -38,9 +38,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import com.crud_project.crud.entity.PageState;
+import com.crud_project.crud.dvo.PageState;
+import com.crud_project.crud.dvo.WheelSpinResult;
 import com.crud_project.crud.entity.User;
-import com.crud_project.crud.entity.WheelSpinResult;
 import com.crud_project.crud.repository.UserProjection;
 import com.crud_project.crud.repository.UserRepo;
 import com.crud_project.crud.service.ResourceHandler;

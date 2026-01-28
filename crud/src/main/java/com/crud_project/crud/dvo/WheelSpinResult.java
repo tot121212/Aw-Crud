@@ -1,4 +1,4 @@
-package com.crud_project.crud.entity;
+package com.crud_project.crud.dvo;
 
 import java.util.List;
 
