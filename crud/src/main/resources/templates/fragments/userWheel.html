@@ -1,17 +1,16 @@
-<div th:fragment="user-wheel(participants, winner)"
-th:if="${participants != null and winner != null}"
-class="user-wheel-container container flex-column flex-align-center flex-justify-center">
+<div th:fragment="user-wheel(participants, winner)" th:if="${participants != null and winner != null}"
+    class="user-wheel-container container flex-column flex-align-center flex-justify-center">
     <h2>The Wheel of CRUD</h2>
     <div th:text="|1 in ${participants.size()} chance of loss|"></div>
     <div class="wheel-and-needle">
-        <div class="needle"> 
+        <div class="needle">
             <svg width="20" height="20">
-                <polygon points="10,0 20,10 10,20 0,10" fill="crimson"/>
+                <polygon points="10,0 20,10 10,20 0,10" fill="crimson" />
             </svg>
         </div>
-        <ol class="user-wheel" th:data-winner="${winner}" th:data-items="${participants.size()}" th:style="|--_items:${participants.size()};|">
-            <li th:each="username, iterStat : ${participants}"
-            th:style="|--_idx: ${iterStat.index};|">
+        <ol class="user-wheel" th:data-winner="${winner}" th:data-items="${participants.size()}"
+            th:style="|--_items:${participants.size()};|">
+            <li th:each="username, iterStat : ${participants}" th:style="|--_idx: ${iterStat.index};|">
                 <span th:text="${username}"></span>
             </li>
         </ol>

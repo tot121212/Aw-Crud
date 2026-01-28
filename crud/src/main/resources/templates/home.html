@@ -1,32 +1,35 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
-    <head>
-        <meta charset="UTF-8">
-        <title>Aw CRUD</title>
-        <link rel="stylesheet" type="text/css" th:href="@{/css/css-reset.css}">
-        <link rel="stylesheet" type="text/css" th:href="@{/css/main.css}">
-    </head>
-    <body>
-        <div id="content">
-            <header class="container">
-                <section></section>
-                <section>
-                    <h1 class="center">Aw CRUD...</h1>
-                </section>
-                <section></section>
-            </header>
-            <main class="flex-column">
-                <div class="container flex-column flex-align-center">
-                    <form th:action="@{/auth/login}" method="get">
-                        <button type="submit">Login</button>
-                    </form>
 
-                    <form th:action="@{/auth/register}" method="get">
-                        <button type="submit">Register</button>
-                    </form>
-                </div>
-            </main>
-        </div>
-        <script th:src="@{/js/main.js}"></script>
-    </body>
+<head>
+    <meta charset="UTF-8">
+    <title>Aw CRUD</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/css-reset.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/main.css}">
+</head>
+
+<body>
+    <div id="content">
+        <header class="container">
+            <section></section>
+            <section>
+                <h1 class="center">Aw CRUD...</h1>
+            </section>
+            <section></section>
+        </header>
+        <main class="flex-column">
+            <div class="container flex-column flex-align-center">
+                <form th:action="@{/auth/login}" method="get">
+                    <button type="submit">Login</button>
+                </form>
+
+                <form th:action="@{/auth/register}" method="get">
+                    <button type="submit">Register</button>
+                </form>
+            </div>
+        </main>
+    </div>
+    <script th:src="@{/js/main.js}"></script>
+</body>
+
 </html>

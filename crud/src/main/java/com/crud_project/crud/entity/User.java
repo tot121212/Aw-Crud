@@ -21,6 +21,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Builder
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(nullable = false, unique = true)
@@ -35,7 +36,7 @@ public class User {
     @Builder.Default
     @Column(nullable = false)
     private int awCrudsPerformed = 0;
-    
+
     @Builder.Default
     @Column(nullable = false)
     private boolean dead = false;

@@ -53,7 +53,7 @@
 
 .user-wheel li span {
     display: grid;
-    
+
     width: 100%;
     height: 100%;
 
@@ -83,36 +83,38 @@
 }
 
 .user-wheel[data-items="1"] li {
-  aspect-ratio: 1 / 1;
-  display: block;
-  rotate: 0;
-  clip-path: none;
-  width: 100cqi;
+    aspect-ratio: 1 / 1;
+    display: block;
+    rotate: 0;
+    clip-path: none;
+    width: 100cqi;
 }
 
 .user-wheel[data-items="2"] li {
-  height: 100cqi;
-  clip-path: none;
+    height: 100cqi;
+    clip-path: none;
 }
 
 .user-wheel[data-items="3"] li {
-  aspect-ratio: 1 / 2;
-  clip-path: polygon(-35% -100%, 100% 50%, 0% 145%);
+    aspect-ratio: 1 / 2;
+    clip-path: polygon(-35% -100%, 100% 50%, 0% 145%);
 }
 
 .wheel-blink {
-    animation: 
+    animation:
         blink 1s 3;
 }
 
 @keyframes blink {
-  0% {
-    opacity: 1;
-  }
-  75% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
+    0% {
+        opacity: 1;
+    }
+
+    75% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
 }

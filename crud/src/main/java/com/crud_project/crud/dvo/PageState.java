@@ -10,7 +10,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class PageState{
+public class PageState {
+
     public static final int DEFAULT_PAGE = 10;
     public static final int MIN_SIZE = 1;
     public static final int MAX_SIZE = 100;
@@ -21,10 +22,11 @@ public class PageState{
     @Default
     private final int size = DEFAULT_PAGE;
 
-    public static boolean isValidPage(int page){
+    public static boolean isValidPage(int page) {
         return page >= MIN_PAGE;
     }
-    public static boolean isValidSize(int size){
+
+    public static boolean isValidSize(int size) {
         return (size >= MIN_SIZE && size <= MAX_SIZE);
     }
 }

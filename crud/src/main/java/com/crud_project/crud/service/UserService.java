@@ -26,12 +26,12 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 // All actual db logic goes here
 public class UserService {
+
     private final PasswordEncoder passwordEncoder;
     private final UserRepo userRepo;
     private final ResourceHandler resourceHandler;
 
     private final Random random = new Random();
-    
 
     public List<User> getAllUsers() {
         return userRepo.findAll();
@@ -39,7 +39,7 @@ public class UserService {
 
     public User getUserByName(String username) {
         Optional<User> optionalUser = userRepo.findByUserName(username);
-        if (optionalUser.isPresent()){
+        if (optionalUser.isPresent()) {
             return optionalUser.get();
         }
         log.warn("User with name: {} doesn't exist", username);
@@ -48,7 +48,7 @@ public class UserService {
 
     public User getUserById(int id) {
         Optional<User> optionalUser = userRepo.findById(id);
-        if (optionalUser.isPresent()){
+        if (optionalUser.isPresent()) {
             return optionalUser.get();
         }
         log.warn("User with id: {} doesn't exist", id);
@@ -56,62 +56,67 @@ public class UserService {
     }
 
     // Assumes user does not have id because doesnt exist yet in db
-    public User createUser (User user){
+    public User createUser(User user) {
         User savedUser = userRepo.save(user);
         return savedUser;
     }
 
     //Assume this user has been updated, just updating on db
-    public User updateUser (User user){
+    public User updateUser(User user) {
         Optional<User> existingUser = userRepo.findById(user.getId());
-        if (existingUser.isPresent()){
+        if (existingUser.isPresent()) {
             return userRepo.save(user);
         }
         return null;
     }
 
-    public void deleteUserById (int id) {
+    public void deleteUserById(int id) {
         userRepo.deleteById(id);
-        if (getUserById(id) == null){
+        if (getUserById(id) == null) {
             log.info("User with id: {} was dead", id);
-        }
-        else{
+        } else {
             log.warn("User with id: {} was not dead", id);
         }
     }
 
     /**
-     * 
+     *
      * @param page
      * @param size
      * @return Page<UserProjection> || ?null
      */
     public Page<UserProjection> getUserProjectionsByPageState(PageState pageState) {
-        if (pageState == null) return null;
+        if (pageState == null) {
+            return null;
+        }
         Page<UserProjection> projections = userRepo.findAllBy(PageRequest.of(pageState.getPage(), pageState.getSize()));
-        if (projections.isEmpty()) return null;
+        if (projections.isEmpty()) {
+            return null;
+        }
         return projections;
     }
 
     /**
-     * 
+     *
      * @param username
      * @return boolean
      */
     public Boolean getExistsByUsername(String username) {
         Optional<Boolean> optionalExists = userRepo.existsByUserName(username);
-        if (optionalExists.isPresent()) return optionalExists.get();
+        if (optionalExists.isPresent()) {
+            return optionalExists.get();
+        }
         return null;
     }
 
     /**
-     * 
+     *
      * @param username
      * @return UserProjection || null
      */
     public UserProjection getUserProjectionByName(String username) {
         Optional<UserProjection> optionalUserProjection = userRepo.findUserProjectionByUserName(username);
-        if (optionalUserProjection.isPresent()){
+        if (optionalUserProjection.isPresent()) {
             return optionalUserProjection.get();
         }
         return null;
@@ -123,7 +128,9 @@ public class UserService {
      * @return Page of String || Empty Page of String
      */
     public Page<String> getUserNamesByPageState(PageState pageState) {
-        if (pageState == null) return Page.empty();
+        if (pageState == null) {
+            return Page.empty();
+        }
         return userRepo.findAllUserNames(PageRequest.of(pageState.getPage(), pageState.getSize()));
     }
 
@@ -133,15 +140,17 @@ public class UserService {
      */
     public Boolean getDeadByName(String username) {
         Optional<Boolean> optionalIsDead = userRepo.findDeadByUserName(username);
-        if (optionalIsDead.isPresent()) return optionalIsDead.get();
+        if (optionalIsDead.isPresent()) {
+            return optionalIsDead.get();
+        }
         return null;
     }
 
     /**
-     * 
+     *
      * @return boolean
      */
-    public boolean deleteAllUsers(){
+    public boolean deleteAllUsers() {
         try {
             userRepo.deleteAll();
             log.info("Deleted all users");
@@ -155,11 +164,12 @@ public class UserService {
 
     /**
      * Registers a new user
+     *
      * @param username
      * @param password
      * @return User or null
      */
-    public User registerUser(String username, String password){
+    public User registerUser(String username, String password) {
         log.debug("Attempting to register user: {}", username);
         if (getUserByName(username) != null) {
             log.warn("User {} already exists", username);
@@ -179,12 +189,13 @@ public class UserService {
 
     private static final int RNG_MIN_CRUDS = 0;
     private static final int RNG_MAX_CRUDS = 100;
+
     /**
-     * 
+     *
      * @return boolean
      */
     @Transactional
-    public boolean createTestUsers(){
+    public boolean createTestUsers() {
         try {
             List<String> usernames = resourceHandler.getTestUserDbUsernames();
             log.warn("DEBUG: usernames: {}", usernames);
@@ -192,20 +203,20 @@ public class UserService {
 
             String password = resourceHandler.getTestUserDbPasswords().get(0);
             String hashedPassword = passwordEncoder.encode(password);
-            
+
             for (String username : usernames) {
-                
+
                 User user = new User();
                 user.setUserName(username);
                 user.setHashedPassword(hashedPassword);
                 user.setAwCrudsPerformed(random.nextInt(RNG_MIN_CRUDS, RNG_MAX_CRUDS));
-                
+
                 createUser(user);
             }
-            
+
             log.info("Created test users");
             return true;
-            
+
         } catch (Exception e) {
             log.error("Error creating test users: {}", e.getMessage());
             return false;
@@ -215,16 +226,15 @@ public class UserService {
     /**
      * @return boolean
      */
-    public boolean deleteTestUsers(){
+    public boolean deleteTestUsers() {
         try {
             List<String> usernames = resourceHandler.getTestUserDbUsernames();
-            
+
             for (String username : usernames) {
                 User user = getUserByName(username.trim());
                 if (user != null) {
                     deleteUserById(user.getId());
-                }
-                else {
+                } else {
                     throw new Exception(String.format("User '%s' not found during deletion", username.trim()));
                 }
             }
@@ -236,32 +246,39 @@ public class UserService {
             return false;
         }
     }
-    
-    
+
     /**
-     *  Spin the wheel and return the name of the user that was "dead" or null
+     * Spin the wheel and return the name of the user that was "dead" or null
+     *
      * @param model
      * @param username
      * @param page
      * @param size
-     * @return WheelSpinResult || null || throws Unchecked (which will be caught by @Transactional)
+     * @return WheelSpinResult || null || throws Unchecked (which will be caught
+     * by @Transactional)
      */
     @Transactional
     public WheelSpinResult spinWheel(String username, PageState pageState) {
-        
-        if (getDeadByName(username)) return null;
+
+        if (getDeadByName(username)) {
+            return null;
+        }
 
         User currentUser = getUserByName(username);
-        if (currentUser == null) return null;
+        if (currentUser == null) {
+            return null;
+        }
 
         Page<String> pageOfParticipants = getUserNamesByPageState(pageState);
-        if (pageOfParticipants == null) return null;
+        if (pageOfParticipants == null) {
+            return null;
+        }
 
-        List<String> participants = 
-            pageOfParticipants
-            .stream()
-            .collect(Collectors.toList());
-        if (participants.isEmpty()){
+        List<String> participants
+                = pageOfParticipants
+                        .stream()
+                        .collect(Collectors.toList());
+        if (participants.isEmpty()) {
             log.warn("No participants found");
             return null;
         }
@@ -271,17 +288,17 @@ public class UserService {
         // the participants list now predictably has the currentUser at the beginning
 
         String winnerName = participants.get(
-            random.nextInt(participants.size()));
-        
+                random.nextInt(participants.size()));
+
         User winnerUser = getUserByName(winnerName);
-        if (winnerUser == null){
+        if (winnerUser == null) {
             log.warn("Winner is not found");
             return null;
         }
 
         winnerUser.setDead(true);
         currentUser.setAwCrudsPerformed(currentUser.getAwCrudsPerformed() + 1);
-        
+
         return new WheelSpinResult(winnerUser.getUserName(), participants);
     }
 }

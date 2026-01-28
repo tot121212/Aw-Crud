@@ -6,11 +6,13 @@ import java.util.regex.Pattern;
  * Methods for string validation using regex patterns
  */
 public class StringValidation {
+
     private static final Pattern USERNAME_PATTERN = Pattern.compile("^[\\w]{3,32}$");
     private static final Pattern PASSWORD_PATTERN = Pattern.compile("^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*])[A-Za-z0-9#?!@$%^&*]{8,128}$");
-    
+
     /**
      * Validates username using a regex pattern
+     *
      * @param username
      * @return true if valid, false otherwise
      */
@@ -23,6 +25,7 @@ public class StringValidation {
 
     /**
      * Validates password using a regex pattern
+     *
      * @param password
      * @return true if valid, false otherwise
      */
@@ -33,5 +36,4 @@ public class StringValidation {
         return PASSWORD_PATTERN.matcher(password.trim()).matches();
     }
 
-    
 }

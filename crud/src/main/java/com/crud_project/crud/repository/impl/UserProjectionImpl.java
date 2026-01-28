@@ -11,15 +11,16 @@ import lombok.Value;
 @Value
 @Builder
 public class UserProjectionImpl implements UserProjection, Serializable {
+
     private final String userName;
     private final int awCrudsPerformed;
     private final boolean dead;
 
     public static UserProjectionImpl from(UserProjection projection) {
         return UserProjectionImpl.builder()
-            .userName(projection.getUserName())
-            .awCrudsPerformed(projection.getAwCrudsPerformed())
-            .dead(projection.isDead())
-            .build();
+                .userName(projection.getUserName())
+                .awCrudsPerformed(projection.getAwCrudsPerformed())
+                .dead(projection.isDead())
+                .build();
     }
 }

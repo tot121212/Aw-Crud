@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequestMapping({"/", "/home"})
 public class HomeController {
+
     private final AuthController authController;
 
     // this should probably be in authcontroller

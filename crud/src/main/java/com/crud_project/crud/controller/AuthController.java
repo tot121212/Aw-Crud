@@ -1,6 +1,5 @@
 package com.crud_project.crud.controller;
 
-
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -22,15 +21,17 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class AuthController {
+
     private final UserService userService;
 
     /**
-     *  Redirects anyone who is already authenticated to the "/crud" endpoint instead
-     */ 
-    public String authRedirect(HttpServletRequest request, Authentication authentication, HttpSession session){
-        if (authentication != null && 
-            authentication.isAuthenticated() &&
-            !(authentication instanceof AnonymousAuthenticationToken)) {
+     * Redirects anyone who is already authenticated to the "/crud" endpoint
+     * instead
+     */
+    public String authRedirect(HttpServletRequest request, Authentication authentication, HttpSession session) {
+        if (authentication != null
+                && authentication.isAuthenticated()
+                && !(authentication instanceof AnonymousAuthenticationToken)) {
             log.info("User {} is already authenticated, directing to " + "/crud", authentication.getName());
             return "redirect:" + "/crud";
         }
@@ -40,12 +41,10 @@ public class AuthController {
             return "redirect:" + "/home";
         }
 
-
         String destination = request.getRequestURI().substring(1);
         log.info("User is not authenticated, showing requested template");
-        
 
-         // if none provided default to home
+        // if none provided default to home
         if (destination.equals("") || destination.equals("/")) {
             log.warn("Destination empty, directing to " + "/home");
             return "redirect:" + "/home";
@@ -53,18 +52,17 @@ public class AuthController {
 
         return destination;
     }
-    
+
     @GetMapping({"/login", "/register"})
     public String loginGet(HttpServletRequest request, Authentication authentication, HttpSession session) {
         return authRedirect(request, authentication, session);
     }
 
-
     @PostMapping("/register")
     public String registerPost(@RequestParam String username, @RequestParam String password) {
-        if (StringValidation.isValidUsername(username) 
-        && StringValidation.isValidPassword(password) 
-        && (userService.registerUser(username, password) != null)) {
+        if (StringValidation.isValidUsername(username)
+                && StringValidation.isValidPassword(password)
+                && (userService.registerUser(username, password) != null)) {
             return "redirect:" + "/auth" + "/login";
         }
         return "redirect:" + "/auth" + "/register" + "?error=true";

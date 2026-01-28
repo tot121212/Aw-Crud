@@ -16,7 +16,8 @@ public class CustomUserDetails implements UserDetails, CredentialsContainer {
 
     private final Integer id;
     private final String username;
-    private @Nullable String password;
+    private @Nullable
+    String password;
     private final Collection<? extends GrantedAuthority> authorities;
 
     @Builder
@@ -32,7 +33,7 @@ public class CustomUserDetails implements UserDetails, CredentialsContainer {
     }
 
     @Override
-    public void eraseCredentials(){
+    public void eraseCredentials() {
         this.password = null;
     }
 
@@ -40,43 +41,65 @@ public class CustomUserDetails implements UserDetails, CredentialsContainer {
         return this.id;
     }
 
-    @Override public Collection<? extends GrantedAuthority> getAuthorities() {
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
         return this.authorities;
     }
 
-    @Override public String getPassword() {
+    @Override
+    public String getPassword() {
         return this.password;
     }
 
-    @Override public String getUsername() {
+    @Override
+    public String getUsername() {
         return this.username;
     }
 
-    @Override public boolean isAccountNonExpired() { return true; }
-    @Override public boolean isAccountNonLocked() { return true; }
-    @Override public boolean isCredentialsNonExpired() { return true; }
-    @Override public boolean isEnabled() { return true; }
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
 
     public static class CustomGrantedAuthority implements GrantedAuthority {
-        
+
         private final String authority;
+
         public CustomGrantedAuthority(String authority) {
             this.authority = authority;
         }
+
         @Override
-        @Nullable public String getAuthority(){
+        @Nullable
+        public String getAuthority() {
             return this.authority;
         }
     }
 
     /**
      * Prepends ROLE_ to each list element
+     *
      * @return
      */
-    public static Set<CustomGrantedAuthority> getSetOfAuthorities(Set<String> collection){
+    public static Set<CustomGrantedAuthority> getSetOfAuthorities(Set<String> collection) {
         return collection.stream()
-            .filter(role -> !role.isEmpty())
-            .map(role -> new CustomGrantedAuthority("ROLE_" + role))
-            .collect(Collectors.toSet());
+                .filter(role -> !role.isEmpty())
+                .map(role -> new CustomGrantedAuthority("ROLE_" + role))
+                .collect(Collectors.toSet());
     }
 }

@@ -15,21 +15,22 @@ import lombok.AllArgsConstructor;
 
 @Service
 @AllArgsConstructor
-public class UserDetailsServiceImpl implements UserDetailsService{
+public class UserDetailsServiceImpl implements UserDetailsService {
+
     private final UserRepo userRepo;
 
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         final User jpaUser = userRepo
-            .findByUserName(username)
-            .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-        
+                .findByUserName(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
         return CustomUserDetails.builder()
-            .username(jpaUser.getUserName())
-            .password(jpaUser.getHashedPassword())
-            .authorities(Set.of("USER"))
-            .id(jpaUser.getId())
-            .build();
+                .username(jpaUser.getUserName())
+                .password(jpaUser.getHashedPassword())
+                .authorities(Set.of("USER"))
+                .id(jpaUser.getId())
+                .build();
     }
 }

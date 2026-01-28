@@ -1,8 +1,7 @@
-<div th:fragment="user-gravestone(user)"
-th:if="${user != null}"
-class="user-gravestone container flex-column flex-align-center"> <!-- User displays here -->
+<div th:fragment="user-gravestone(user)" th:if="${user != null}"
+    class="user-gravestone container flex-column flex-align-center"> <!-- User displays here -->
     You are dead...
     <h2 th:text="${user.userName}" class="error"></h2>
     <div th:text="'Performed ' + ${user.awCrudsPerformed} + ' Aw CRUD\'s'"></div>
-    <img th:src="@{/svg/gravestone.svg}" alt="Gravestone" width="150" class="svg"/>
+    <img th:src="@{/svg/gravestone.svg}" alt="Gravestone" width="150" class="svg" />
 </div>

@@ -8,6 +8,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class WheelSpinResult {
+
     private final String winnerName;
     private final List<String> participants;
 }
