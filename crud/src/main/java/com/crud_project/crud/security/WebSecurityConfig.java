@@ -30,6 +30,7 @@ public class WebSecurityConfig {
                 .formLogin(
                         (form) -> form
                                 .loginPage("/auth/login")
+                                .defaultSuccessUrl("/crud", true)
                                 .failureUrl("/auth/login?error=true")
                                 .permitAll()
                 )
