@@ -38,11 +38,13 @@ public class UserService {
     }
 
     public User getUserByName(String username) {
-        Optional<User> optionalUser = userRepo.findByUserName(username);
-        if (optionalUser.isPresent()) {
-            return optionalUser.get();
+        if (username != null) {
+            Optional<User> optionalUser = userRepo.findByUserName(username);
+            if (optionalUser.isPresent()) {
+                return optionalUser.get();
+            }
+            log.warn("User with name: {} doesn't exist", username);
         }
-        log.warn("User with name: {} doesn't exist", username);
         return null;
     }
 
