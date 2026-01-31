@@ -226,17 +226,18 @@ public class UserService {
     /**
      * @return boolean
      */
+    @Transactional
     public boolean deleteTestUsers() {
         try {
             List<String> usernames = resourceHandler.getTestUserDbUsernames();
 
             for (String username : usernames) {
+                
                 User user = getUserByName(username.trim());
-                if (user != null) {
-                    deleteUserById(user.getId());
-                } else {
+                if (user == null) {
                     throw new Exception(String.format("User '%s' not found during deletion", username.trim()));
                 }
+                deleteUserById(user.getId());
             }
             log.info("Deleted test users");
             return true;
