@@ -59,6 +59,9 @@ public class UserService {
 
     // Assumes user does not have id because doesnt exist yet in db
     public User createUser(User user) {
+        if (user == null) {
+            return null;
+        }
         User savedUser = userRepo.save(user);
         return savedUser;
     }
