@@ -70,13 +70,13 @@ public class UserService {
         return null;
     }
 
-    public void deleteUserById(int id) {
+    public boolean deleteUserById(int id) {
         userRepo.deleteById(id);
         if (getUserById(id) == null) {
-            log.info("User with id: {} was dead", id);
-        } else {
-            log.warn("User with id: {} was not dead", id);
+            return true;
         }
+        log.warn("User was not deleted");
+        return false;
     }
 
     /**
