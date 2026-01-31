@@ -30,8 +30,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepo userRepo;
     private final ResourceHandler resourceHandler;
-
-    private final Random random = new Random();
+    private final Random random;
 
     public List<User> getAllUsers() {
         return userRepo.findAll();
