@@ -198,6 +198,9 @@ public class UserService {
     public boolean createTestUsers() {
         try {
             List<String> usernames = resourceHandler.getTestUserDbUsernames();
+            if (usernames == null) {
+                return false;
+            }
             log.warn("DEBUG: usernames: {}", usernames);
             Collections.shuffle(usernames);
 
