@@ -1,8 +1,6 @@
 services:
   app:
     image: aw-crud-app:latest
-    build:
-      context: .
     container_name: aw-crud-app
     depends_on:
       - db
