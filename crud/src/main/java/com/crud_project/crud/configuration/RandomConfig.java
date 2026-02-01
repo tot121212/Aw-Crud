@@ -1,4 +1,4 @@
-package com.crud_project.configuration;
+package com.crud_project.crud.configuration;
 
 import java.util.Random;
 
