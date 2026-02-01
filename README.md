@@ -1,6 +1,6 @@
 # Aw Crud
 
-A Spring Boot CRUD application with a "Wheel of Death" game mechanic. Users can register, view user lists, and spin a wheel where the "winner" faces deletion (marked as dead).
+A Spring Boot CRUD application with a "Wheel of Death" game mechanic. Users can register, view user lists, and spin a wheel where the "winner" faces deletion.
 
 ## Quick Start
 
