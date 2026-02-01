@@ -11,28 +11,30 @@ A Spring Boot CRUD application with a "Wheel of Death" game mechanic. Users can 
 - Docker 24.x or newer
 - Maven (for development)
 
-### Production (Docker)
-
-Run the application with a single command:
+### Running Production
 
 ```bash
-docker compose up -d
+docker compose -f prod.compose.yaml up -d
 ```
 
-> The application will be available at `http://localhost:9797`
+> The application will be available at `http://localhost:9797/`
 
-### Development
+**Note**: \
+This uses `prod.compose.yaml`, which includes both the application and database services. \
+The `CRUD/crud/compose.yaml` file is for development only and contains only the database.
+
+### Running Development
 
 1. **Run the application**:
 
    ```bash
    cd crud
-   ./mvnw spring-boot:run
+   mvn spring-boot:run
    ```
 
     ***Note***:\
     No need to worry about starting the database.\
-    It will start automatically via the `spring-boot-docker-compose` dependency.
+    It will start automatically via `spring-boot-docker-compose`.
 
 1. **Access the application**:
    Navigate to `http://localhost:9797`
@@ -62,7 +64,7 @@ docker compose up -d
 
 ### Environment Variables
 
-The containers uses the following environment variables (defined in `.env`):
+The production containers uses the following environment variables (defined in `.env`):
 
 ```bash
 DB_NAME=aw_crud_db
@@ -70,45 +72,40 @@ DB_USERNAME=username
 DB_PASSWORD=password
 SERVER_EXTERNAL_PORT=9797
 ```
+Most of these dont need to be configured except the `SERVER_EXTERNAL_PORT` but only if it's in use.
 
 ### Application Properties
 
-Key configuration in `src/main/resources/application.properties`:
-
-```properties
-server.port=9797
-spring.datasource.url=jdbc:postgresql://localhost:9898/aw_crud_db
-spring.jpa.hibernate.ddl-auto=update
-```
+Dev configuration is in `src/main/resources/application.properties`:
 
 ## Development
-
-### Building the Application
-
-```bash
-cd crud
-./mvnw clean package
-```
 
 ### Running Tests
 
 ```bash
 cd crud
-./mvnw test
+mvn test
 ```
+
+### Building the Application
+
+```bash
+cd crud
+mvn clean package
+```
+
+### To rebuild the `Dockerfile`
+
+```bash
+docker build -t aw-crud-app:latest .
+```
+Then you can run with `docker compose -f prod.compose.yaml up -d`
 
 ### Database Schema
 
 The application uses JPA with automatic schema generation:
 
-- `User`: Main user entity with username, password, and deletion status
-
-## Main API Endpoints
-
-- `GET /` - Home page (login/register)
-- `GET /crud` - Main CRUD interface (requires authentication)
-- `POST /crud/requestPage` - Request user page
-- `POST /crud/spinWheel` - Spin the wheel of death
+- `User`: Main user entity with username, password, etc.
 
 ## Security
 
