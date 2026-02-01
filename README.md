@@ -14,6 +14,7 @@ A Spring Boot CRUD application with a "Wheel of Death" game mechanic. Users can 
 ### Running Production
 
 ```bash
+docker pull tot121212/aw-crud-app:latest
 docker compose -f prod.compose.yaml up -d
 ```
 
@@ -94,7 +95,7 @@ cd crud
 mvn clean package
 ```
 
-### To rebuild the `Dockerfile`
+### To rebuild the `Dockerfile` locally
 
 ```bash
 docker build -t aw-crud-app:latest .
