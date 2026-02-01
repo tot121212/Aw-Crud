@@ -99,7 +99,7 @@ mvn clean package
 ```bash
 docker build -t aw-crud-app:latest .
 ```
-Then you can run with `docker compose -f prod.compose.yaml up -d`
+Then you can run prod afterwards with `docker compose -f prod.compose.yaml up -d`
 
 ### Database Schema
 
