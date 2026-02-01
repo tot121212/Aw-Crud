@@ -11,19 +11,6 @@ A Spring Boot CRUD application with a "Wheel of Death" game mechanic. Users can 
 - Docker 24.x or newer
 - Maven (for development)
 
-### Running Production
-
-```bash
-docker pull tot121212/aw-crud-app:latest
-docker compose -f prod.compose.yaml up -d
-```
-
-> The application will be available at `http://localhost:9797/`
-
-**Note**: \
-This uses `prod.compose.yaml`, which includes both the application and database services. \
-The `CRUD/crud/compose.yaml` file is for development only and contains only the database.
-
 ### Running Development
 
 1. **Run the application**:
@@ -37,8 +24,45 @@ The `CRUD/crud/compose.yaml` file is for development only and contains only the 
     No need to worry about starting the database.\
     It will start automatically via `spring-boot-docker-compose`.
 
-1. **Access the application**:
+2. **Access the application**:
    Navigate to `http://localhost:9797`
+
+### Running Production
+
+```bash
+docker pull tot121212/aw-crud-app:latest
+docker compose -f prod.compose.yaml up -d
+```
+
+> The application will be available at `http://localhost:9797/`
+
+**Note**: \
+This uses `prod.compose.yaml`, which includes both the application and database services. \
+The `CRUD/crud/compose.yaml` file is for development only and contains only the database.
+
+## Commands
+
+### Running Tests
+
+```bash
+cd crud
+mvn test
+```
+
+### Building the Application
+
+```bash
+cd crud
+mvn clean package
+```
+
+### To rebuild the `Dockerfile` locally
+
+```bash
+docker build -t aw-crud-app:latest .
+```
+- Then, you can run prod with `docker compose -f prod.compose.yaml up -d`
+
 
 ## Architecture
 
@@ -78,29 +102,6 @@ Most of these dont need to be configured except the `SERVER_EXTERNAL_PORT` but o
 ### Application Properties
 
 Dev configuration is in `src/main/resources/application.properties`:
-
-## Development
-
-### Running Tests
-
-```bash
-cd crud
-mvn test
-```
-
-### Building the Application
-
-```bash
-cd crud
-mvn clean package
-```
-
-### To rebuild the `Dockerfile` locally
-
-```bash
-docker build -t aw-crud-app:latest .
-```
-Then you can run prod afterwards with `docker compose -f prod.compose.yaml up -d`
 
 ### Database Schema
 
