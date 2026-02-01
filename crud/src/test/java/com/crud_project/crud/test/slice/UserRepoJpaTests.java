@@ -30,8 +30,8 @@ public class UserRepoJpaTests {
     @Autowired
     private UserRepo userRepo;
 
-    private static final List<String> listOfUsernames
-            = Collections.unmodifiableList(List.of("User1", "User2", "User3", "User4"));
+    private static final List<String> listOfUsernames = Collections
+            .unmodifiableList(List.of("User1", "User2", "User3", "User4"));
     private static Map<String, User> userNameToUser;
 
     private void initUserNameToUser() {
@@ -42,8 +42,7 @@ public class UserRepoJpaTests {
                     User.builder()
                             .userName(name)
                             .hashedPassword(name)
-                            .build()
-            );
+                            .build());
         }
     }
 
@@ -125,7 +124,7 @@ public class UserRepoJpaTests {
             }
 
             // Find a page of users
-            Page<UserProjection> users = userRepo.findAllBy(Pageable.ofSize(2));
+            Page<UserProjection> users = userRepo.findAllUserProjectionBy(Pageable.ofSize(2));
 
             // Verify that the page is correct
             assertEquals(listOfUsernames.size(), users.getTotalElements());
@@ -159,21 +158,19 @@ public class UserRepoJpaTests {
             user1 = userRepo.save(user1);
 
             // Check if the user exists
-            Optional<Boolean> exists = userRepo.existsByUserName(user1.getUserName());
+            boolean exists = userRepo.existsByUserName(user1.getUserName());
 
             // Verify that the user exists
-            assertTrue(exists.isPresent());
-            assertTrue(exists.get());
+            assertTrue(exists);
         }
 
         @Test
         void existsByUserName_nonExistentUser_returnsFalse() {
             // Check if a non-existent user exists
-            Optional<Boolean> exists = userRepo.existsByUserName("nonExistentUser");
+            boolean exists = userRepo.existsByUserName("nonExistentUser");
 
             // Verify that the user does not exist
-            assertTrue(exists.isPresent());
-            assertFalse(exists.get());
+            assertFalse(exists);
         }
     }
 }

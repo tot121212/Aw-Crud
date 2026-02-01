@@ -35,18 +35,17 @@ public class CrudController {
         return ResponseEntity.notFound().build();
     }
 
-    @GetMapping("") //"/crud"
+    @GetMapping("") // "/crud"
     public String getCrud(
             Model model,
             Authentication authentication,
-            @SessionAttribute(SessionKeys.CUR_USER_PAGE_STATE) PageState pageState
-    ) {
+            @SessionAttribute(SessionKeys.CUR_USER_PAGE_STATE) PageState pageState) {
         // if (authentication.getPrincipal() instanceof CustomUserDetails userDetails){
-        //     log.info("CustomUserDetails ID: " + userDetails.getId());
+        // log.info("CustomUserDetails ID: " + userDetails.getId());
         // } else {
-        //     log.info("CustomUserDetails not found");
+        // log.info("CustomUserDetails not found");
         // }
-        //log.info(String.valueOf(userService.getUserProjectionByName(name).isDead()));
+        // log.info(String.valueOf(userService.getUserProjectionByName(name).isDead()));
         model.addAttribute(
                 ModelKeys.CUR_USER_PROJECTION,
                 userService.getUserProjectionByName(authentication.getName()));
@@ -77,36 +76,35 @@ public class CrudController {
 
     // @PostMapping("/create")
     // public String createPost(
-    //     @RequestParam String username, 
-    //     @RequestParam String password
+    // @RequestParam String username,
+    // @RequestParam String password
     // ) {
-    //     boolean isUsernameValid = StateValidationUtils.isValidUsername(username);
-    //     boolean isPasswordValid = StateValidationUtils.isValidPassword(password);
-    //     String registreeUsername = isUsernameValid ? username : null;
-    //     boolean isRegistered = false;
-    //     String fragment = "user-create-form";
-    //     if (isUsernameValid 
-    //         && isPasswordValid 
-    //         && (userService.registerUser(username, password) != null)){
-    //         isRegistered = true;
-    //     }
-    //     return "redirect:" + 
-    //     UriComponentsBuilder
-    //         .fromPath("/crud")
-    //         .queryParam("registerUser", isRegistered)
-    //         .queryParam("isUsernameValid", isUsernameValid)
-    //         .queryParam("isPasswordValid", isPasswordValid)
-    //         .queryParam("registerUserUsername", registreeUsername)
-    //         .fragment(fragment)
-    //         .build()
-    //         .toUriString();
+    // boolean isUsernameValid = StateValidationUtils.isValidUsername(username);
+    // boolean isPasswordValid = StateValidationUtils.isValidPassword(password);
+    // String registreeUsername = isUsernameValid ? username : null;
+    // boolean isRegistered = false;
+    // String fragment = "user-create-form";
+    // if (isUsernameValid
+    // && isPasswordValid
+    // && (userService.registerUser(username, password) != null)){
+    // isRegistered = true;
+    // }
+    // return "redirect:" +
+    // UriComponentsBuilder
+    // .fromPath("/crud")
+    // .queryParam("registerUser", isRegistered)
+    // .queryParam("isUsernameValid", isUsernameValid)
+    // .queryParam("isPasswordValid", isPasswordValid)
+    // .queryParam("registerUserUsername", registreeUsername)
+    // .fragment(fragment)
+    // .build()
+    // .toUriString();
     // }
     @PostMapping("/requestPage")
     public String requestPagePost(
             HttpSession session,
             @RequestParam(defaultValue = "0") Integer pageNumber,
-            @RequestParam(defaultValue = "10") Integer pageSize
-    ) {
+            @RequestParam(defaultValue = "10") Integer pageSize) {
         if (PageState.isValidPage(pageNumber)
                 && PageState.isValidSize(pageSize)) {
             session.setAttribute(
@@ -115,9 +113,9 @@ public class CrudController {
                             .builder()
                             .page(pageNumber)
                             .size(pageSize)
-                            .build()
-            );
-            //log.info("CUR_USER_PAGE_STATE: " + session.getAttribute(SessionKeys.CUR_USER_PAGE_STATE).toString());
+                            .build());
+            // log.info("CUR_USER_PAGE_STATE: " +
+            // session.getAttribute(SessionKeys.CUR_USER_PAGE_STATE).toString());
             return "redirect:/crud" + "#user-table";
         }
 
@@ -128,9 +126,22 @@ public class CrudController {
     public String spinWheelPost(
             Authentication authentication,
             RedirectAttributes redirectAttributes,
-            @SessionAttribute(SessionKeys.CUR_USER_PAGE_STATE) PageState pageState
-    ) {
+            @SessionAttribute(SessionKeys.CUR_USER_PAGE_STATE) PageState pageState) {
+        
+        if (pageState == null) {
+            log.warn("PageState is null for user: {}", authentication.getName());
+            redirectAttributes.addFlashAttribute("wheelError", "Page state not found. Please request a page first.");
+            return "redirect:/crud" + "#user-wheel";
+        }
+        
         WheelSpinResult wheelSpinResult = userService.spinWheel(authentication.getName(), pageState);
+        
+        if (wheelSpinResult == null) {
+            log.warn("Wheel spin result is null for user: {}", authentication.getName());
+            redirectAttributes.addFlashAttribute("wheelError", "Unable to spin wheel. Please try again.");
+            return "redirect:/crud" + "#user-wheel";
+        }
+        
         redirectAttributes.addFlashAttribute(ModelKeys.WHEEL_WINNER, wheelSpinResult.getWinnerName());
         redirectAttributes.addFlashAttribute(ModelKeys.WHEEL_PARTICIPANTS, wheelSpinResult.getParticipants());
         return "redirect:/crud" + "#user-wheel";
