@@ -21,27 +21,32 @@ public class WebSecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .userDetailsService(userDetailsService)
-                .authorizeHttpRequests(
-                        (requests) -> requests
-                                .requestMatchers("/error", "/", "/home", "/auth/register", "/auth/login", "/css/**", "/data/**", "/js/**", "/svg/**", "/.well-known/**")
-                                .permitAll()
-                                .anyRequest().authenticated()
-                )
-                .formLogin(
-                        (form) -> form
-                                .loginPage("/auth/login")
-                                .defaultSuccessUrl("/crud", true)
-                                .failureUrl("/auth/login?error=true")
-                                .permitAll()
-                )
-                .logout(
-                        logout -> logout
-                                .logoutUrl("/auth/logout")
-                                .logoutSuccessUrl("/auth/login?logout=true")
-                                .invalidateHttpSession(true)
-                                .clearAuthentication(true)
-                                .permitAll()
-                );
+                .authorizeHttpRequests(requests -> requests
+                        .requestMatchers("/error", "/", "/home", "/auth/register", "/auth/login", "/css/**", "/data/**",
+                                "/js/**", "/svg/**", "/.well-known/**")
+                        .permitAll()
+                        .anyRequest().authenticated())
+                .formLogin(form -> form
+                        .loginPage("/auth/login")
+                        .defaultSuccessUrl("/crud", true)
+                        .failureUrl("/auth/login?error=true")
+                        .permitAll())
+                .logout(logout -> logout
+                        .logoutUrl("/auth/logout")
+                        .logoutSuccessUrl("/auth/login?logout=true")
+                        .invalidateHttpSession(true)
+                        .clearAuthentication(true)
+                        .permitAll())
+                .headers(headers -> headers
+                        .contentSecurityPolicy(csp -> csp
+                                .policyDirectives("default-src 'self'; " +
+                                        "script-src 'self'; " +
+                                        "style-src 'self' 'unsafe-inline'; " +
+                                        "img-src 'self' data:; " +
+                                        "font-src 'self'; " +
+                                        "object-src 'none'; " +
+                                        "base-uri 'self'; " +
+                                        "form-action 'self'")));
         return http.build();
     }
 
