@@ -39,7 +39,6 @@
 ### Running Production
 
 ```bash
-docker pull tot121212/aw-crud-app:latest
 docker compose -f prod.compose.yaml up -d
 ```
 
