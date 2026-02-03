@@ -67,7 +67,7 @@ mvn clean package
 ### To rebuild the `Dockerfile` locally
 
 ```bash
-docker build -t aw-crud-app:latest .
+docker build -t tot121212/aw-crud-app:latest .
 ```
 - Then, you can run prod with `docker compose -f prod.compose.yaml up -d`
 
