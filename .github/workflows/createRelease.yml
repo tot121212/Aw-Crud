@@ -1,0 +1,36 @@
+name: Create Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version (e.g., v1.0.0)'
+        required: true
+        default: 'v1.0.0'
+
+jobs:
+  create-release:
+    runs-on: ubuntu-slim
+    
+    steps:
+      - name: Checkout files from main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          sparse-checkout: |
+            prod.compose.yaml
+            LICENSE
+            README.md
+          sparse-checkout-cone-mode: false
+      
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.event.inputs.version }}
+          name: "Release ${{ github.event.inputs.version }}"
+          files: |
+            prod.compose.yaml
+            LICENSE
+            README.md
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
