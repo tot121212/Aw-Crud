@@ -31,6 +31,7 @@ jobs:
         with:
           tag_name: ${{ github.event.inputs.version }}
           name: "Release ${{ github.event.inputs.version }}"
+          generateReleaseNotes: true
           files: |
             prod.compose.yaml
             LICENSE
